@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the oct_store_ftb module.
+ */
+
+//hook_requirements
+
+//hook_schema
+
+/**
+ * Implements hook_schema().
+ */
+function oct_store_ftb_schema() {
+  $schema = array();
+
+  $schema['oct_store_ftb_purchase'] = array(
+    'description' => 'Fairy tale Ball purchases info.',
+
+    'fields' => array(
+      'cid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Primary Key: Unique identifier for product cart item.',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Long description',
+      ),
+//      'datetime' => array(
+//        'type' => 'datetime',
+//        'mysql_type' => 'DATETIME',
+//        'pgsql_type' => 'timestamp without time zone',
+//        'sqlite_type' => 'VARCHAR',
+//        'sqlsrv_type' => 'smalldatetime',
+//        'description' => 'Show date time',
+//        'not null' => TRUE,
+//        'sortable' => TRUE,
+//        'views' => TRUE,
+//      ),
+//      'quantity_adults' => array(
+//        'type' => 'int',
+//        'size' => 'normal',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'description' => 'Adults quantity',
+//      ),
+//      'quantity_tweens' => array(
+//        'type' => 'int',
+//        'size' => 'normal',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'description' => 'Tweens quantity',
+//      ),
+//      'quantity_babysitters' => array(
+//        'type' => 'int',
+//        'size' => 'normal',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'description' => 'Babysitters quantity',
+//      ),
+//      'quantity_ft_money' => array(
+//        'type' => 'int',
+//        'size' => 'normal',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'description' => 'Fairy Tale Money',
+//      ),
+//      'quantity_babysitters_dinner' => array(
+//        'type' => 'int',
+//        'size' => 'normal',
+//        'unsigned' => TRUE,
+//        'not null' => TRUE,
+//        'default' => 0,
+//        'description' => 'Babysitters quantity: Attending Adult’s Dinner',
+//      ),
+    ),
+    'primary key' => array('cid'),
+  );
+
+  return $schema;
+}
+
+//hook_uninstall
+
+//hook_enable
+
+//hook_disable

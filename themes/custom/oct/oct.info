@@ -1,0 +1,19 @@
+name = OCT
+core = 7.x
+
+stylesheets[all][] = css/styles.css
+stylesheets[all][] = css/custom.css
+
+scripts[] = js/lib/combobox.js
+scripts[] = js/js.js
+scripts[] = js/custom.js
+scripts[] = js/lib/jquery.formstyler.min.js
+
+regions[header] = Header
+regions[help] = Help
+regions[content_top] = Content top
+regions[content] = Content
+regions[content_bottom] = Content bottom
+regions[sidebar_right] = Sidebar right
+
+regions[footer] = Footer

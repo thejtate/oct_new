@@ -1,0 +1,122 @@
+.content-wrapper {
+  @include clearfix();
+  background: image-url('bg/bg-main.png');
+  position: relative;
+  z-index: 40;
+  padding: 0 0 30px 0;
+
+  h1 {
+    background: image-url('bg/bg-h1_1.png') no-repeat 0 0;
+    width: 349px;
+    margin: 0 auto;
+    padding: 8px;
+    font-size: 22px;
+    font-family: $atlas;
+    font-weight: normal;
+    color: #9dc1f2;
+    text-align: center;
+    position: relative;
+  }
+
+  .content-inner {
+    background: image-url('bg/content-bg.png');
+    position: relative;
+    padding: 18px 41px 20px 60px;
+    width: 665px;
+    margin-top: 20px;
+    min-height: 590px;
+
+    &:before {
+      @include pseudo-block($top: -21px, $left: 0, $right: 0);
+      @include oneline-sprite-box($icons, content-top);
+    }
+
+    &:after {
+      @include pseudo-block($bottom: -35px, $left: 0, $right: 0);
+      @include oneline-sprite-box($icons, content-bot);
+    }
+  }
+
+  .page-main & {
+
+    .content-inner {
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .questions {
+      color: #3B5F94;
+      font-size: 12px;
+      font-weight: normal;
+
+      .question {
+        margin-bottom: 30px;
+      }
+
+      p {
+        margin: 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        a {
+          text-decoration: none;
+        }
+
+        span {
+          font-weight: bold;
+          display: block;
+        }
+      }
+
+      .back {
+        border: 2px solid #FABB3E;
+        background-color: #CF760F;
+        padding: 2px 13px 2px 13px;
+        color: #FBFFB2;
+        font-size: 14px;
+        text-decoration: none;
+        font-family: $atlas;
+      }
+    }
+
+    .event-date {
+      color: #3B5F94;
+      text-align: left;
+    }
+
+    .movie {
+      text-align: center;
+      margin: 15px 0;
+
+      img {
+        border: 8px solid #D7A625;
+      }
+    }
+  }
+
+  .site-container {
+    padding-left: 19px;
+
+    .content-inner {
+      margin: 20px auto;
+    }
+  }
+}
+
+.inner-wrapper {
+
+  .button-go-page {
+    position: absolute;
+    right: 0;
+    top: -100px;
+
+    a {
+      @include oneline-sprite-box($icons, back-stage);
+      @include text-hide();
+      display: block;
+    }
+  }
+}

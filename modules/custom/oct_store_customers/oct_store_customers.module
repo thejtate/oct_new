@@ -1,0 +1,140 @@
+<?php
+
+/**
+ * @file
+ * OCT store customers
+ */
+
+define('OCT_STORE_CUSTOMERS_RID', 5);
+
+/**
+ * Implements hook_views_api()
+ */
+function oct_store_customers_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_customers') . '/views',
+  );
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function oct_store_customers_form_alter(&$form, &$form_state, $form_id) {
+
+  if($form_id == 'fnl_store_checkout_form') {
+    array_unshift($form['#submit'], 'oct_store_customers_checkout_submit');
+  }
+}
+
+/**
+ * Checkout form submission callback.
+ */
+function oct_store_customers_checkout_submit($form, &$form_state) {
+  $order = &$form_state['order'];
+  $values = $form_state['values'];
+
+  oct_store_customers_merge($values['user'], $order->oid);
+
+/* Disable Creating users on checkout
+  if(!empty($values['user']['email'])) {
+    $email = $values['user']['email'];
+
+    if(user_is_anonymous() && !user_load_by_mail($email)) {
+      //create new user if not exist
+
+      //This will generate a random password
+      $password = strtolower(user_password(8));
+      $name = oct_store_customers_email_to_username($email);
+      //set up the user fields
+      $fields = array(
+        'name' => $name,
+        'mail' => $email,
+        'pass' => $password,
+        'status' => 1,
+        'init' => 'email address',
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+          OCT_STORE_CUSTOMERS_RID => 'customer',
+        ),
+      );
+
+      $account = user_save('', $fields);
+
+      // Manually set the password so it appears in the e-mail.
+      $account->password = $fields['pass'];
+
+      //authenticate user
+      global $user;
+      $user = user_load($account->uid);
+      $login_array = array ('name' => $name);
+      user_login_finalize($login_array);
+
+      $order->user_id = $user->uid;
+
+      fnl_store_order_save($order);
+
+      //attach to oder created user data for checkout complete notifications
+      $order->data['user_created']['name'] = $name;
+      $order->data['user_created']['password'] = $password;
+
+      //Send the e-mail through the user module.
+      //drupal_mail('user', 'register_no_approval_required', $email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@oklahomachildrenstheatre.org'));
+    }
+  }
+*/
+}
+
+/**
+ * Insert/update customers data
+ */
+function oct_store_customers_merge($user_values, $order_oid) {
+
+  db_merge('oct_store_customers')
+    ->key(array('oid' => $order_oid))
+    ->fields(array(
+      'first_name' => !empty($user_values['first_name']) ? $user_values['first_name'] : '',
+      'last_name' => !empty($user_values['last_name']) ? $user_values['last_name'] : '',
+      'purchaser' => !empty($user_values['purchaser']) ? $user_values['purchaser'] : '',
+      'parent_first_name' => !empty($user_values['first_name']) ? $user_values['first_name'] : '',
+      'parent_last_name' => !empty($user_values['last_name']) ? $user_values['last_name'] : '',
+      'parent_2_first_name' => !empty($user_values['second_first_name']) ? $user_values['second_first_name'] : '',
+      'parent_2_last_name' => !empty($user_values['second_last_name']) ? $user_values['second_last_name'] : '',
+      'phone' => !empty($user_values['phone']) ? $user_values['phone'] : '',
+      'address' => !empty($user_values['address']) ? $user_values['address'] : '',
+      'city' => !empty($user_values['city']) ? $user_values['city'] : '',
+      'state' => !empty($user_values['state']) ? $user_values['state'] : '',
+      'zip' => !empty($user_values['zip']) ? $user_values['zip'] : '',
+      'email' => !empty($user_values['email']) ? $user_values['email'] : '',
+    ))
+    ->execute();
+}
+
+/**
+ * Create free user name from email.
+ */
+function oct_store_customers_email_to_username($email) {
+
+  // Default to the first part of the e-mail address.
+  $name = substr($email, 0, strpos($email, '@'));
+
+  // Remove possible illegal characters.
+  $name = preg_replace('/[^A-Za-z0-9_.-]/', '', $name);
+
+  // Trim that value for spaces and length.
+  $name = trim(substr($name, 0, USERNAME_MAX_LENGTH - 4));
+
+  // Make sure we don't hand out a duplicate username.
+  while (db_query("SELECT COUNT(uid) FROM {users} WHERE LOWER(name) = LOWER(:name)", array(':name' => $name))->fetchField() > 0) {
+    // If the username got too long, trim it back down.
+    if (strlen($name) == USERNAME_MAX_LENGTH) {
+      $name = substr($name, 0, USERNAME_MAX_LENGTH - 4);
+    }
+
+    // Append a random integer to the name.
+    $name .= rand(0, 9);
+  }
+
+  return $name;
+}

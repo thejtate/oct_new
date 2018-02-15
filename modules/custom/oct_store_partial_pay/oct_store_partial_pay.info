@@ -1,0 +1,10 @@
+name = OCT Store Partial pay
+description = OCT Store Partial pay
+package = OCT
+core = 7.x
+version = 7.x-1.x
+interface translation project = FALSE
+
+files[] = views/oct_store_partial_pay.views.inc
+files[] = views/views_handler_field_is_product_partial_payment_available.inc
+;dependencies[] =

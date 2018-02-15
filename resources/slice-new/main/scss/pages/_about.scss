@@ -1,0 +1,65 @@
+&.page-about-us {
+
+  .content-wrapper {
+
+    h4 {
+      color: #3b5f94;
+      font-size: 31px;
+      font-family: $peralta-regular;
+      margin: 0 0 25px 0;
+      position: relative;
+      padding-bottom: 15px;
+
+      &:before {
+        @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+        background: image-url('bg/dott-post.png');
+        height: 5px;
+      }
+    }
+
+    h5 {
+      font-size: 17px;
+      color: #cc6d00;
+      font-family: $bitter-italic;
+      margin: 0 0 17px;
+    }
+
+    .about-desc {
+      @include clearfix();
+    }
+
+    ul {
+      margin: 0 0 25px 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+        margin-bottom: 4px;
+
+        span {
+          font-family: $podkova-bold;
+          width: 180px;
+        }
+      }
+    }
+
+    strong{
+      width: 160px;
+      display: inline-block;
+
+      @media (min-width: $bp-small) {
+        width: 200px;
+      }
+    }
+
+    .left-part {
+      margin: 0 auto;
+      max-width: 440px;
+    }
+
+    .right-part {
+      float: left;
+      max-width: 660px;
+    }
+  }
+}

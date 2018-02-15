@@ -1,0 +1,273 @@
+<?php
+
+/**
+ * @file
+ * Oct store camps products
+ */
+ define('OCT_STORE_DATE_FORMAT', 'm/d/Y');
+ define('OCT_STORE_TIME_FORMAT', 'H:i a');
+
+module_load_include('inc', 'oct_store_cc', 'includes/oct_store_cc.camps_form');
+
+/**
+ * Form Page callback.
+ */
+function oct_store_cc_camps_callback() {
+
+  $form = drupal_get_form('oct_store_cc_form');
+  $output = drupal_render($form);
+  return $output;
+}
+
+
+/**
+ * Implements hook_views_api()
+ */
+function oct_store_cc_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_cc') . '/views',
+  );
+}
+
+
+/**
+ * Implements hook_fnl_store_products().
+ */
+function oct_store_cc_fnl_store_products() {
+
+  return array(
+    'product_camp' => array(
+      'title' => t('Camps'),
+    ),
+    'product_class' => array(
+      'title' => t('Class'),
+    )
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_cc_theme() {
+
+  $return = array();
+
+  $return['oct_store_camp_form_table'] = array(
+    'render element' => 'element',
+    'path' => drupal_get_path('module', 'oct_store_cc') . "/templates",
+    'template' => 'oct-store-camps-table-form'
+  );
+
+  $return['oct_store_class_form_table'] = array(
+    'render element' => 'element',
+    'path' => drupal_get_path('module', 'oct_store_cc') . "/templates",
+    'template' => 'oct-store-class-table-form'
+  );
+
+  $return['oct_store_cc_children'] = array(
+    'render element' => 'element',
+    'path' => drupal_get_path('module', 'oct_store_cc') . "/templates",
+    'template' => 'oct-store-cc-children-form'
+  );
+
+  $return['oct_store_cc_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('module', 'oct_store_cc') . "/templates",
+    'template' => 'oct-store-cc-form'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_fnl_store_cart_product_prepare_view().
+ * Prepare product formatted array of properties. For using in different render templates.
+ */
+function oct_store_cc_fnl_store_cart_product_prepare_view($product) {
+
+  if ($product->type == 'product_camp' || $product->type == 'product_class') {
+
+    $product_data = $product->data;
+    $birthday_obj = !empty($product_data['child_info']['birth_date']) ? new DateObject(
+      $product_data['child_info']['birth_date']
+    ) : NULL;
+    if (!empty($product_data['full_info']['datetime_from'])) {
+      $from_datetime_obj = new DateObject(
+        $product_data['full_info']['datetime_from']
+      );
+      $from_time = $from_datetime_obj->format(OCT_STORE_TIME_FORMAT);
+      $from_date = $from_datetime_obj->format(OCT_STORE_DATE_FORMAT);
+    }
+    else {
+      $from_time = '';
+      $from_date = '';
+
+    }
+
+    if (!empty($product_data['full_info']['datetime_from'])) {
+      $to_datetime_obj = new DateObject(
+        $product_data['full_info']['datetime_to']
+      );
+      $to_time = $to_datetime_obj->format(OCT_STORE_TIME_FORMAT);
+      $to_date = $to_datetime_obj->format(OCT_STORE_DATE_FORMAT);
+    }
+    else {
+      $to_time = '';
+      $to_date = '';
+    }
+    $date_parts = array();
+    $date_parts[] = $from_time . ' - ' . $to_time;
+    $date_parts[] = $from_date . ' - ' . $to_date;
+
+
+    $product->properties_list[] = array(
+      'title' => t('Date'),
+      'value' => implode(' | ', $date_parts),
+    );
+
+    if (!empty($product_data['full_info']['days'])) {
+      $product->properties_list[] = array(
+        'title' => t('Days'),
+        'value' => check_plain($product_data['full_info']['days']),
+      );
+    }
+
+    $product->properties_list[] = array(
+      'title' => t('Birthday'),
+      'value' => !empty($birthday_obj) ? $birthday_obj->format(
+        OCT_STORE_DATE_FORMAT
+      ) : '',
+    );
+
+    $product->properties_list[] = array(
+      'title' => t('Child’s first name'),
+      'value' => !empty($product_data['child_info']['first_name']) ? check_plain(
+        $product_data['child_info']['first_name']
+      ) : '',
+    );
+
+    $product->properties_list[] = array(
+      'title' => t('Child’s last name'),
+      'value' => !empty($product_data['child_info']['last_name']) ? check_plain(
+        $product_data['child_info']['last_name']
+      ) : '',
+    );
+    $product->properties_list[] = array(
+      'title' => t('Child’s gender'),
+      'value' => !empty($product_data['child_info']['gender']) ? check_plain(
+        $product_data['child_info']['gender']
+      ) : '',
+    );
+
+    if (!empty($product_data['child_info']['allergy'])) {
+      $product->properties_list[] = array(
+        'title' => t('Child’s food allergy'),
+        'value' => check_plain($product_data['child_info']['allergy']),
+      );
+    }
+    if($product->type != 'product_class') {
+      if (!empty($product_data['child_info']['t-shirt'])) {
+        $product->properties_list[] = array(
+          'title' => t('T-shirt'),
+          'value' => check_plain($product_data['child_info']['t-shirt']),
+        );
+      }
+    }
+  }
+
+}
+
+/**
+ * Implements hook_fnl_store_cart_after_add_product().
+ */
+function oct_store_cc_fnl_store_cart_after_add_product($product) {
+  //save camps related information to own table
+  if($product->type == 'product_camp' || $product->type == 'product_class') {
+    $record = array();
+    $record['cid'] = $product->cid;
+    $record['week'] = !empty($product->data['full_info']['week']) ? $product->data['full_info']['week'] : '';
+    $record['event_date_from'] = $product->data['full_info']['datetime_from'];
+    $record['event_date_to'] = $product->data['full_info']['datetime_to'];
+
+    $record['days'] = $product->data['full_info']['days'];
+    $record['birth_date'] = $product->data['child_info']['birth_date'];
+    $record['first_name'] = $product->data['child_info']['first_name'];
+    $record['last_name'] = $product->data['child_info']['last_name'];
+    $record['allergy'] = $product->data['child_info']['allergy'];
+    $record['gender'] = $product->data['child_info']['gender'];
+    $record['t-shirt'] = !empty($product->data['child_info']['t-shirt']) ? $product->data['child_info']['t-shirt'] : '' ;
+
+    $record['primary_first_name'] = $product->data['parents_info']['primary']['first_name'];
+    $record['primary_last_name'] = $product->data['parents_info']['primary']['last_name'];
+    $record['primary_phone_type'] = $product->data['parents_info']['primary']['phone_type'];
+    $record['primary_daytime_phone'] = $product->data['parents_info']['primary']['phone'];
+//    $record['primary_cell_phone'] = $product->data['parents_info']['primary']['cellphone'];
+    $record['primary_email'] = $product->data['parents_info']['primary']['email'];
+    $record['primary_relationship'] = $product->data['parents_info']['primary']['relationship'];
+
+    $record['alternate_first_name'] = $product->data['parents_info']['alternate']['first_name'];
+    $record['alternate_last_name'] = $product->data['parents_info']['alternate']['last_name'];
+    $record['emergency_phone_type'] = $product->data['parents_info']['alternate']['phone_type'];
+    $record['alternate_daytime_phone'] = $product->data['parents_info']['alternate']['phone'];
+//    $record['alternate_cell_phone'] = $product->data['parents_info']['alternate']['cellphone'];
+    $record['alternate_email'] = $product->data['parents_info']['alternate']['email'];
+    $record['emergency_relationship'] = $product->data['parents_info']['alternate']['relationship'];
+
+    $record['emergency_first_name'] = $product->data['parents_info']['emergency']['first_name'];
+    $record['emergency_last_name'] = $product->data['parents_info']['emergency']['last_name'];
+    $record['emergency_daytime_phone'] = $product->data['parents_info']['emergency']['phone'];
+    $record['emergency_is_other_information'] = $product->data['parents_info']['emergency']['is_other_information'];
+    $record['emergency_other_information'] = $product->data['parents_info']['emergency']['other_information'];
+
+    drupal_write_record('oct_store_camp_class_purchase', $record);
+  }
+}
+
+/**
+ * Implements hook_fnl_store_cart_after_remove_product().
+ */
+function oct_store_cc_fnl_store_cart_after_remove_product($product) {
+
+  if($product->type == 'product_camp' || $product->type == 'product_class') {
+    //remove camps and classes related info
+    db_delete('oct_store_camp_class_purchase')
+      ->condition('cid', $product->cid)
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_fnl_store_delete_cart().
+ *
+ * @param $oid
+ * @param $cids
+ */
+function oct_store_cc_fnl_store_delete_cart($oid, $cids) {
+  //remove production related info
+  db_delete('oct_store_camp_class_purchase')
+    ->condition('cid', $cids, 'IN')
+    ->execute();
+}
+
+/**
+ * Implements hook_preprocess_node().
+ *
+ * @param $vars
+ */
+function oct_store_cc_preprocess_node(&$vars) {
+
+  switch($vars['type']) {
+    case 'camp_enrollment':
+      $vars['content']['form'] = drupal_get_form('oct_store_cc_form', $vars['content'], 'camp');
+      break;
+    case 'class_enrollment':
+      $vars['content']['form'] = drupal_get_form('oct_store_cc_form', $vars['content'], 'class');
+      break;
+  }
+
+}
+
+function oct_store_cc_phone_type_options() {
+  return array('Home' => t('Home'), 'Work' => t('Work'), 'Mobile' => t('Mobile'));
+}

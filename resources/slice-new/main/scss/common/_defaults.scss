@@ -1,0 +1,226 @@
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  height: 100%;
+  font-family: $podkova-regular;
+  color: #915100;
+  min-width: 320px;
+
+  &.mobile-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+  }
+}
+
+*, :after, :before {
+  @include box-sizing(border-box);
+  outline: none;
+}
+
+h1, h2, h3, h4, h5, h6, strong {
+  font-weight: normal;
+}
+
+h2 {
+  font-size: 20px;
+
+  @media (min-width: $bp-small) {
+    font-size: 24px;
+  }
+
+  @media (min-width: $bp-middle) {
+    font-size: 26px;
+  }
+
+  @media (min-width: $bp-large) {
+    font-size: 28px;
+  }
+}
+
+h3 {
+  font-size: 18px;
+
+  @media (min-width: $bp-small) {
+    font-size: 20px;
+  }
+
+  @media (min-width: $bp-middle) {
+    font-size: 22px;
+  }
+}
+
+strong {
+  font-family: $podkova-bold;
+}
+
+img[style*="right"] {
+  margin: 0 0 10px 20px;
+  clear: right;
+}
+
+img[style*="left"] {
+  margin: 0 20px 10px 0;
+  clear: left;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+p {
+  margin: 15px 0;
+  line-height: 1.2;
+
+  @media (min-width: $bp-small) {
+    line-height: 1.4;
+  }
+}
+
+a {
+  color: #254d7b;
+}
+
+.page-user {
+
+//  &.adminimal-menu .content-wrapper div.tabs {
+//    top: 417px;
+//  }
+
+  &.page .title h2 {
+    overflow: hidden;
+    font-size: 20px;
+
+    @media (min-width: $bp-small) {
+      overflow: visible;
+      font-size: 45px;
+    }
+
+    @media (min-width: $bp-middle) {
+      font-size: 52px;
+    }
+  }
+
+  .content-wrapper {
+    position: relative;
+  }
+
+  .content-wrapper div.tabs {
+    position: relative;
+    //top: 388px;
+    left: 50%;
+    @include translateX(-50%);
+    z-index: 1;
+    right: auto;
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 20px;
+
+    @media (min-width: $bp-small) {
+      position: absolute;
+      margin-bottom: 0;
+    }
+
+    .element-invisible {
+      display: none;
+    }
+
+    ul.primary {
+      border: none;
+      margin: 0;
+
+      li {
+        text-align: center;
+        display: block;
+
+        @media (min-width: $bp-small) {
+          text-align: left;
+          display: inline;
+        }
+
+        &.active a {
+          background-color: #fccf65;
+          border: 1px solid #eb9823;
+          color: #915100;
+          text-shadow: none;
+
+          @media (min-width: $bp-small) {
+            border: none;
+          }
+        }
+
+        a {
+          background: #eb9823;
+          padding: 6px 20px;
+          color: #ffd773;
+          font-family: podkova-bold;
+          border-color: #eb9823;
+          text-shadow: -1px 1px 0 #915100;
+          display: inline-block;
+          min-width: 210px;
+
+          @media (min-width: $bp-small) {
+            min-width: 0;
+            border-color: #fccf65;
+          }
+        }
+      }
+    }
+  }
+
+  .password-strength {
+    float: none;
+    margin-bottom: 16px;
+
+    @media (min-width: $bp-small) {
+      float: right;
+      margin-bottom: 0;
+    }
+  }
+
+  .password-strength-text {
+    float: none;
+
+    @media (min-width: $bp-small) {
+      float: right;
+    }
+  }
+
+  .confirm-parent, .password-parent {
+    width: 100%;
+
+    @media (min-width: $bp-small) {
+      width: 36.3em;
+    }
+  }
+}
+
+.page-store-complete.page.page-cart .content-wrapper {
+
+  h3.complete-head {
+    font-size: 28px;
+
+    @media (min-width: $bp-small) {
+      font-size: 40px;
+    }
+  }
+
+  tr td {
+    font-size: 10px;
+
+    @media (min-width: $bp-small) {
+      font-size: 15px;
+    }
+  }
+}
+
+.full-block {
+  position: relative;
+  left: 50%;
+}

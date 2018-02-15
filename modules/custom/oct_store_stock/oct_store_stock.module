@@ -1,0 +1,330 @@
+<?php
+
+/**
+ * @file
+ * Store stock
+ */
+
+function oct_store_stock_qty_fields_map() {
+  return array(
+    'product_camp' => array(
+      'value_field' => 'field_product_session_qty_ticket',//field to store stock value
+      'locks_fields' => array( //field to disable selling for product
+        'field_product_session_sold_out',
+        'field_product_session_not_avail'
+      )
+    ),
+    'product_class' => array(
+      'value_field' => 'field_product_session_qty_ticket',//field to store stock value
+      'locks_fields' => array( //field to disable selling for product
+        'field_product_session_sold_out',
+        'field_product_session_not_avail'
+      )
+    ),
+    'product_production' => array(
+      'value_field' => 'field_production_time_qty_ticket',
+      'locks_fields' => array(
+        'field_production_time_sold_out',
+        'field_production_time_not_avail'
+      )
+    ),
+  );
+}
+
+/**
+ * Return available product quantity in stock.
+ *
+ * @param (object) $product
+ *
+ * @return int
+ */
+function oct_store_stock_get_quantity($product) {
+
+  $id = NULL;
+
+  if(!empty($product->data['full_info']['collection_id'])) {
+    $id = $product->data['full_info']['collection_id'];
+  } elseif(!empty($product->data['full_info']['nid'])) {
+    $id = $product->data['full_info']['nid'];
+  }
+
+  $qty = oct_store_stock_get_quantity_by_id($product->type, $id);
+
+  return $qty;
+}
+
+/**
+ * @param $type string Product type
+ * @param $id int product Node Nid or Field collection Id
+ *
+ * @return int
+ */
+function oct_store_stock_get_quantity_by_id($type, $id) {
+
+  $qty = 0;
+
+  $qty_field_map = oct_store_stock_qty_fields_map();
+
+  if(empty($qty_field_map[$type])) {
+    return 999999999999;//product don`t have stock restrictions
+  }
+
+  if(!empty($qty_field_map[$type]['value_field'])) {
+    //Handle Product Stock qty stored in node field collecton.
+
+    $qty_field_name = $qty_field_map[$type]['value_field'];
+    $lock_fields_names = !empty($qty_field_map[$type]['locks_fields']) ? $qty_field_map[$type]['locks_fields'] : array();
+
+    $field_collection_id = $id;
+    $fc = field_collection_item_load($field_collection_id);
+
+    try {
+      $fc_wrap = entity_metadata_wrapper('field_collection_item', $fc);
+
+      foreach ($lock_fields_names as $lock_field_name) {
+        if($qty = $fc_wrap->{$lock_field_name}->value()) {
+          //Product Locked to sell
+          return 0;
+        }
+      }
+
+      $qty = $fc_wrap->{$qty_field_name}->value();
+    } catch (EntityMetadataWrapperException $exc) {
+      watchdog('oct_store_stock', 'EntityMetadataWrapper exception in %function() <pre>@trace</pre>', array('%function' => __FUNCTION__, '@trace' => $exc->getTraceAsString()), WATCHDOG_ERROR );
+    }
+  }
+  return $qty;
+}
+
+/**
+ * Decrease product quantity.
+ *
+ * @param $product
+ * @param $amount
+ */
+function oct_store_stock_decrease_quantity($product, $value) {
+  _oct_store_stock_change_quantity($product, $value, 'decrease');
+}
+
+/**
+ * Increase product quantity.
+ *
+ * @param $product
+ * @param $amount
+ */
+function oct_store_stock_increase_quantity($product, $value) {
+  _oct_store_stock_change_quantity($product, $value, 'increase');
+}
+
+/**
+ * Helper function for increase/decrease product quantity.
+ *
+ * @param $product
+ * @param $value
+ * @param string $op optional (decrease | increase)
+ *
+ * @return null|int
+ */
+function _oct_store_stock_change_quantity($product, $value, $op) {
+
+  $new_qty = NULL;
+
+  $qty_field_map = oct_store_stock_qty_fields_map();
+
+  if(empty($qty_field_map[$product->type])) {
+    return 999999999999;//product don`t have stock restrictions
+  }
+
+  if(!empty($qty_field_map[$product->type]['value_field'])
+    && !empty($product->data['full_info']['collection_id'])) {
+    //Handle Product Stock qty stored in node field collecton.
+
+      $qty_field_name = $qty_field_map[$product->type]['value_field'];
+
+      $field_collection_id = $product->data['full_info']['collection_id'];
+      $fc = field_collection_item_load($field_collection_id);
+
+      try {
+        $fc_wrap = entity_metadata_wrapper('field_collection_item', $fc);
+        $qty = $fc_wrap->{$qty_field_name}->value();
+
+        $new_qty = ($op === 'decrease') ?  $qty - $value : $qty + $value;
+
+        $fc_wrap->{$qty_field_name}->set($new_qty);
+        $fc_wrap->save();
+      } catch (EntityMetadataWrapperException $exc) {
+        watchdog('oct_store_stock', 'EntityMetadataWrapper exception in %function() <pre>@trace</pre>', array('%function' => __FUNCTION__, '@trace' => $exc->getTraceAsString()), WATCHDOG_ERROR );
+      }
+
+  }
+
+  return $new_qty;
+}
+
+/**
+ * Implements hook_fnl_store_order_after_save_alter
+ */
+function oct_store_stock_fnl_store_order_before_save_alter($order) {
+
+  $stock_decrease_statuses_group = array(
+    FNL_ORDER_STATUS_COMPLETE,
+    FNL_ORDER_STATUS_ON_CHECKOUT,
+    FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS,
+    FNL_ORDER_STATUS_PAYMENT_PENDING,
+    FNL_ORDER_STATUS_PAYMENT_PARTIAL,
+    FNL_ORDER_STATUS_PAYMENT_RECEIVED,
+    FNL_ORDER_STATUS_TEST_PAYMENT_RECEIVED,
+  );
+
+  $original_status = !empty($order->original->status) ? $order->original->status : NULL;
+
+  $new_status = $order->status;
+
+  if ($original_status != $new_status
+    && (in_array($original_status, $stock_decrease_statuses_group) !== in_array($new_status, $stock_decrease_statuses_group))
+  ) {
+
+    if (in_array($new_status, $stock_decrease_statuses_group)) {
+      //decrease products stock
+      $cart = fnl_store_cart_load($order->oid);
+      $products_grouped_by_sku = oct_store_stock_group_products_by_sku($cart['products']);
+      foreach ($products_grouped_by_sku as $product_sku => $info) {
+        oct_store_stock_decrease_quantity(reset($info['products']), oct_store_stock_cart_product_qty($product_sku, $order->oid));
+      }
+
+    }
+    else {
+      //increase products stock
+      $cart = fnl_store_cart_load($order->oid);
+      $products_grouped_by_sku = oct_store_stock_group_products_by_sku($cart['products']);
+      foreach ($products_grouped_by_sku as $product_sku => $info) {
+        oct_store_stock_increase_quantity(reset($info['products']), oct_store_stock_cart_product_qty($product_sku, $order->oid));
+      }
+    }
+
+  }
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function oct_store_stock_form_fnl_store_checkout_form_alter(&$form, &$form_state, $form_id) {
+
+
+  $form['#validate'][] = 'oct_store_stock_checkout_validate';
+
+  //Immediately validate stock on checkout form display.
+  oct_store_stock_checkout_validate($form, $form_state);
+}
+
+/**
+ * Checkout stock validate.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function oct_store_stock_checkout_validate(&$form, &$form_state) {
+
+  $cart = &$form_state['cart'];
+
+  if(empty($cart['products'])) {
+    drupal_goto(FNL_STORE_CART_PAGE);
+  }
+
+  $products_grouped_by_sku = array();
+
+  foreach ($cart['products'] as $product) {
+    $products_grouped_by_sku[$product->sku][] = $product;
+  }
+
+  foreach($products_grouped_by_sku as $sku => $products) {
+    $selected_qty = 0;
+    $first_product = reset($products);
+
+    foreach ($products as $product) {
+      $selected_qty += $product->qty;
+    }
+
+    $store_qty = oct_store_stock_get_quantity($first_product);
+
+    if($store_qty - $selected_qty < 0) {
+      drupal_goto(FNL_STORE_CART_PAGE);
+    }
+  }
+
+}
+
+/**
+ * Calculate products count for each product sku.
+ */
+function oct_store_stock_group_products_by_sku($products) {
+
+  $products_group_by_sku = array();
+
+  foreach ($products as $product) {
+      $products_group_by_sku[$product->sku]['products'][] = $product;
+  }
+
+  return $products_group_by_sku;
+}
+
+/**
+ * Implements hook_preprocess_views_view_table().
+ */
+function oct_store_stock_preprocess_views_view_table(&$vars) {
+
+  $view = &$vars['view'];
+
+  if($view->name = 'cart' && $view->current_display == 'cart') {
+    $view->out_of_stock = FALSE;
+
+    foreach ($view->result as $delta => $product_data) {
+      $product = new stdClass();
+      $product->type = $product_data->fnl_store_cart_type;
+      $product->sku = $product_data->fnl_store_cart_sku;
+      $product->data = unserialize($product_data->fnl_store_cart_data);
+
+      $stock_qty = oct_store_stock_get_quantity($product);
+      $order_qty = oct_store_stock_cart_product_qty($product_data->fnl_store_cart_sku, $product_data->fnl_store_cart_oid);
+
+      if($stock_qty - $order_qty < 0) {
+        drupal_set_message(t('The maximum quantity for %product that can be ordered is @number', array('%product' => $product_data->fnl_store_cart_name, '@number' => $stock_qty)), 'error');
+        $vars['row_classes'][$delta][] = 'out-of-stock';
+        $view->out_of_stock = TRUE;
+      }
+    }
+
+    if($view->out_of_stock) {
+      drupal_set_message('Some products are out of stock. Remove them to proceed checkout.', 'error');
+    }
+  }
+}
+
+/**
+ * Get quantity of products in order.
+ *
+ * @param string Product SKU
+ * @param int (optional) Order id, or current user cart.
+ */
+function oct_store_stock_cart_product_qty($product_sku, $oid = NULL) {
+  $count = 0;
+  $order = fnl_store_cart_load($oid);
+
+  if(!empty($order['products'])) {
+    $searched_products = array_filter($order['products'], function($v) use($product_sku) {return $v->sku === $product_sku;});
+
+    if(!empty($searched_products)) {
+      foreach ($searched_products as $searched_product) {
+
+        $stock_qty = $searched_product->qty;
+        //some products has multiple items in one product, let them alter this value
+        drupal_alter('oct_store_stock_cart_product_qty', $stock_qty, $searched_product);
+
+        $count += $stock_qty;
+      }
+    }
+  }
+
+  return $count;
+}

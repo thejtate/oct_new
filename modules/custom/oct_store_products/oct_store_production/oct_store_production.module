@@ -1,0 +1,248 @@
+<?php
+
+/**
+ * @file
+ * Oct store production.
+ * Add production product form, classes related data store
+ */
+
+
+define('OCT_STORE_PRODUCTION_DATE_FORMAT', 'm-d-Y h:ia');
+define('OCT_STORE_PRODUCTION_CHILDREN_COUNT_FOR_FREE_TICKET', 20);
+
+/**
+ * Implements hook_menu().
+ */
+function oct_store_production_menu() {
+  $items = array();
+
+  $items['production/tickets'] = array(
+    'title' => 'Performance Tickets',
+    'access callback' => 'user_access',
+    'access arguments' => array('oct store production tickets form'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('oct_store_production_form'),
+    'file' => 'includes/oct_store_production.form.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_fnl_store_products().
+ */
+function oct_store_production_fnl_store_products() {
+
+  return array(
+    'product_production' => array(
+      'title' => t('Production'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function oct_store_production_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_production') . '/views',
+  );
+}
+
+
+/**
+ * Load Production node.
+ *
+ * @param $nid
+ * @return bool|mixed
+ */
+function oct_store_production_product_node_load($nid) {
+
+  $node = node_load($nid);
+  return (!empty($node) && $node->type === 'product_production') ? $node : FALSE;
+
+}
+
+/**
+ * Implements hook_permission().
+ */
+function oct_store_production_permission() {
+  $return = array();
+
+  $return['oct store production tickets form'] = array(
+    'title' => t('Access to the production tickets purchase form'),
+    'description' => t('Allow to the user to access the production tickets purchase form.'),
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_production_theme() {
+
+  $return = array();
+
+  $return['oct_store_production_form_table'] = array(
+    'render element' => 'element',
+    'path' => drupal_get_path('module', 'oct_store_production') . "/templates",
+    'template' => 'oct-store-production-table-form'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_fnl_store_cart_product_prepare_view().
+ *
+ * Prepare product formatted array of properties. For using in different render templates.
+ */
+function oct_store_production_fnl_store_cart_product_prepare_view($product) {
+
+  if($product->type === 'product_production') {
+
+    $product->properties_list[] = array(
+      'title' =>  t('Date and Time'),
+      'value' => $product->data['full_info']['datetime'],
+    );
+
+    $product->properties_list[] = array(
+      'title' =>  t('Tickets'),
+      'value' => '',
+    );
+
+    foreach ($product->data['selected_tickets'] as $item) {
+      $product->properties_list[] = array(
+        'title' => '',
+        'value' => $item['count'] . ' x ' . $item['label'] . ' ($ ' . $item['price'] . ' each)',
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_fnl_store_cart_after_add_product().
+ */
+function oct_store_production_fnl_store_cart_after_add_product($product) {
+
+  //save production related information to own db table
+  if($product->type === 'product_production') {
+    $datetime_obj = date_create_from_format(OCT_STORE_PRODUCTION_DATE_FORMAT, $product->data['full_info']['datetime']);
+    $datetime_obj->setTimezone(new DateTimeZone('UTC'));
+
+    $record = array();
+    $record['cid'] = $product->cid;
+    $record['datetime'] = $datetime_obj->format(DATE_FORMAT_DATETIME);//TIME stored in database in UTC timezone
+    $record['quantity_adults'] = !empty($product->data['selected_tickets']['adult_tickets']['count']) ? $product->data['selected_tickets']['adult_tickets']['count'] : 0;
+    $record['quantity_students'] = !empty($product->data['selected_tickets']['student_tickets']['count']) ? $product->data['selected_tickets']['student_tickets']['count'] : 0;
+    $record['quantity_children'] = !empty($product->data['selected_tickets']['child_tickets']['count']) ? $product->data['selected_tickets']['child_tickets']['count'] : 0;
+    $record['quantity_children_small_group'] = !empty($product->data['selected_tickets']['child_groups']['count']) ? $product->data['selected_tickets']['child_groups']['count'] : 0;
+    $record['quantity_children_big_group'] = !empty($product->data['selected_tickets']['child_50_plus_group_tickets']['count']) ? $product->data['selected_tickets']['child_50_plus_group_tickets']['count'] : 0;
+    $record['quantity_complimentary_adult'] = !empty($product->data['selected_tickets']['complimentary_adult']['count']) ? $product->data['selected_tickets']['complimentary_adult']['count'] : 0;
+
+    drupal_write_record('oct_store_production_purchase', $record);
+  }
+}
+
+/**
+ * Implements hook_fnl_store_cart_after_remove_product().
+ */
+function oct_store_production_fnl_store_cart_after_remove_product($product) {
+ //remove production related info
+  db_delete('oct_store_production_purchase')
+    ->condition('cid', $product->cid)
+    ->execute();
+}
+
+/**
+ * Implements hook_fnl_store_delete_cart().
+ *
+ * @param $oid
+ * @param $cids
+ */
+function oct_store_production_fnl_store_delete_cart($oid, $cids) {
+  //remove production related info
+  db_delete('oct_store_production_purchase')
+    ->condition('cid', $cids, 'IN')
+    ->execute();
+}
+
+/**
+ * Implements oct_store_stock_cart_product_qty_alter().
+ *
+ * @param $product
+ * @param $qty products count in cart
+ */
+function oct_store_production_oct_store_stock_cart_product_qty_alter(&$qty, &$product) {
+
+  if($product->type == 'product_production') {
+    //Each product can have multiple tickets. So alter qty for store.
+    $qty = $product->data['total_tickets_count'] * $qty;
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function oct_store_production_node_view($node, $view_mode, $langcode) {
+
+  if($node->type == 'product_production') {
+
+    switch($view_mode) {
+      case 'full':
+        drupal_goto('production/tickets', array('query' => array('id' => $node->nid)));
+        break;
+      case 'teaser':
+        $node->is_available_online = oct_store_production_is_available($node);
+        break;
+    }
+  }
+}
+
+/**
+ * Check if production node has at least one upcoming available date.
+ * (Not sold upt, and available online)
+ *
+ * @param $node
+ * @return bool
+ */
+function oct_store_production_is_available($node) {
+
+  $result = FALSE;
+
+  try {
+    $wrap = entity_metadata_wrapper('node', $node);
+
+    //iterate field collection
+    $now = new DateObject();
+    foreach ($wrap->field_production_time->getIterator() as $delta => $fc_item_wrap) {
+
+     /** @var EntityDrupalWrapper $fc_item_wrap **/
+
+        $start_date_obj = new DateObject($fc_item_wrap->field_production_time_date->value->value());
+
+      if ($start_date_obj > $now) {
+
+        $qty = $fc_item_wrap->field_production_time_qty_ticket->value();
+        $sold_out = $fc_item_wrap->field_production_time_sold_out->value();
+        $time_not_avail = $fc_item_wrap->field_production_time_not_avail->value();
+
+        if ($qty > 0 && empty($sold_out) && empty($time_not_avail)) {
+          $result = TRUE;
+          break;//stop search we found first available date
+        }
+
+      }
+
+    }
+
+  } catch (EntityMetadataWrapperException $exc) {
+    watchdog('oct_store_production', __FUNCTION__ . '() <pre>' .  $exc->getTraceAsString() . '</pre>', NULL, WATCHDOG_ERROR);
+    drupal_set_message($exc->getMessage(), 'error');
+  }
+
+  return $result;
+}

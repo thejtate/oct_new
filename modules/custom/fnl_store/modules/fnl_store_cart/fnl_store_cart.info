@@ -1,0 +1,13 @@
+name = Funnel store cart.
+description = Funnel store cart.
+package = Funnel
+core = 7.x
+version = 7.x-1.x
+
+files[] = views/fnl_store_cart.views.inc
+files[] = views/views_handler_field_cart_item_delete_link.inc
+files[] = views/views_handler_field_fnl_store_cart_rendered_product.inc
+files[] = views/views_handler_filter_fnl_store_cart_product.inc
+files[] = views/views_handler_field_fnl_store_cart_serial_field.inc
+
+dependencies[] = fnl_store

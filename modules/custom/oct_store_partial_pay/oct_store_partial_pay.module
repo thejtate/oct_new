@@ -1,0 +1,627 @@
+<?php
+/**
+ * @file
+ * oct_store_partial_pay
+ */
+define('OCT_STORE_PARTIAL_MINIMAL_AMOUNT_PERCENT', 25);
+/**
+ * Date interval in hours, When partial payment will be closed before event start.
+ */
+define('OCT_STORE_DUE_DATE_DIFF_INTERVAL_HOURS', 24*14);
+define('OCT_STORE_PARTIAL_MINIMAL_AMOUNT', 500);
+define('OCT_STORE_PARTIAL_PAYMENTS_LIMIT', 3);
+define('OCT_STORE_DUE_DATE_FORMAT', 'm/');
+
+/**
+ * Implements hook_menu().
+ */
+function oct_store_partial_pay_menu() {
+  $items = array();
+
+  $items['finish-payment/%fnl_store_order'] = array(
+    'title' => 'Finish payment',
+    'description' => 'Description',
+    'access callback' => 'oct_store_partial_pay_finish_payment_access',
+    'access arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('oct_store_partial_pay_finish', 1),
+    'file' => 'includes/oct_store_partial_pay.finish.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+//  $items['test'] = array(
+//    'title' => 'Title',
+//    'description' => 'Test page for emails',
+//    'access callback' => 'user_access',
+//    'access arguments' => array('oct_store_partial_pay'),
+//    'page callback' => 'oct_store_partial_pay_test',
+//    'file' => 'includes/oct_store_partial_pay.helpers.inc',
+//    'page arguments' => array(),
+//    'type' => MENU_CALLBACK,
+//  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function oct_store_partial_pay_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_partial_pay') . '/views',
+  );
+}
+
+/**
+ * Page access callback.
+ */
+function oct_store_partial_pay_finish_payment_access($order) {
+
+
+ $is_due_date_outdated = oct_store_partial_pay_is_due_date_outdated($order);
+
+ if($is_due_date_outdated) {
+   drupal_set_message('You cant finish payment. Because order due date is outdated.', 'error');
+ }
+
+ //If order partially paid or status in progress but has finished partial transactions.
+ $is_valid_order_status = ($order->status == FNL_ORDER_STATUS_PAYMENT_PARTIAL) || ($order->status == FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS && !empty($order->data['partial_payment']['transactions_count']));
+
+ $is_partial = !empty($order->data['partial_payment']);
+
+ return fnl_store_checkout_complete_order_access($order) && !$is_due_date_outdated && $is_valid_order_status && $is_partial;
+}
+
+function oct_store_partial_pay_is_due_date_outdated($order) {
+  $now_date_time = new DateTime();
+
+  return !empty($order->data['partial_payment']['due_date']) && ($order->data['partial_payment']['due_date'] < $now_date_time->format(DATE_FORMAT_DATETIME));
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_partial_pay_theme() {
+  $return = array();
+
+  $return['oct_store_partial_pay_order_totals'] = array(
+    'variables' => array('order' => NULL),
+    'template' => 'templates/oct-store-partial-pay-order-totals'
+  );
+  $return['oct_store_partial_pay_not_available_list'] = array(
+    'variables' => array('products' => array()),
+    'template' => 'templates/oct-store-partial-pay-not-available-list'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_cronapi().
+ */
+function oct_store_partial_pay_cronapi($op, $job = NULL) {
+  $items = array();
+
+  $items['oct_store_partial_pay_send_email_reminder'] = array(
+    'description' => 'Send reminder email, for order that should be payed soon. Push them to queue.',
+    'rule' => '0 10 * * *', // Every day 10:00
+    'callback' => 'oct_store_partial_pay_send_email_reminder_cron',
+    'file' => 'includes/oct_store_partial_pay.cron.inc',
+  );
+  $items['oct_store_partial_pay_send_cancel_order_email'] = array(
+    'description' => 'Send reminder email, for order that should be payed soon. Push them to queue.',
+    'rule' => '0 15 * * *', // Every day 15:00, note if change time, change it also in callback.
+    'callback' => 'oct_store_partial_pay_send_cancel_order_email',
+    'file' => 'includes/oct_store_partial_pay.cron.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function oct_store_partial_pay_cron_queue_info() {
+
+  $queues['oct_store_partial_pay_reminder_notification'] = array(
+    'worker callback' => 'oct_store_partial_pay_reminder_notification_worker_callback',
+    'time' => 30, // time in second for each worker
+  );
+
+  $queues['oct_store_partial_cancel_order_notification'] = array(
+    'worker callback' => 'oct_store_partial_cancel_order_notification_worker_callback',
+    'time' => 30, // time in second for each worker
+  );
+  return $queues;
+}
+
+/**
+ * Cron queue worker. Send reminder emails by queue.
+ */
+function oct_store_partial_pay_reminder_notification_worker_callback($oid) {
+
+  $order = fnl_store_order_load($oid);
+
+  if(!empty($order) && $order->status == FNL_ORDER_STATUS_PAYMENT_PARTIAL) {
+    oct_store_emails_send_order_partial_paid_finish_payment_reminder($order);
+  }
+}
+
+/**
+ * Cron queue worker. Send reminder emails by queue.
+ */
+function oct_store_partial_cancel_order_notification_worker_callback($oid) {
+  $order = fnl_store_order_load($oid);
+
+  if(!empty($order) && $order->status == FNL_ORDER_STATUS_PAYMENT_PARTIAL) {
+    oct_store_emails_send_cancel_order_notification_to_customer($order);
+  }
+}
+
+/**
+ * Implements fnl_store_payment_check_pending_orders_alter().
+ */
+function oct_store_partial_pay_fnl_store_payment_check_pending_orders_alter(&$set_status_to_failed, $order) {
+
+  if($set_status_to_failed && !empty($order->data['partial_payment']['transactions_count'])) {
+    //do not allow to set status failed for orders with partial payment that have completed partial transactions.
+    $set_status_to_failed = FALSE;
+  }
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function oct_store_partial_pay_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'fnl_store_checkout_form' && !empty($form_state['order'])) {
+
+    $order = &$form_state['order'];
+    $cart = &$form_state['cart'];
+    $due_date = oct_store_partial_pay_get_due_date($order, $cart);
+
+    $products_grouped_by_availability = oct_store_partial_pay_get_product_groups_by_partial_payment($cart);
+
+    if(!empty($products_grouped_by_availability['available'])) {
+
+      $minimal_amount = oct_store_partial_pay_get_first_minimal_amount($order);
+
+      $is_amount_fit_minimum = $order->amount >= OCT_STORE_PARTIAL_MINIMAL_AMOUNT;
+
+      $form['partial_payment'] = array(
+        '#type' => 'fieldset',
+        '#tree' => TRUE,
+        '#collapsible' => FALSE,
+        '#collapsed' => FALSE,
+      );
+
+      $options = array();
+      $options['full'] = t('Pay full amount.');
+
+      if(!user_is_anonymous() && empty($products_grouped_by_availability['not_available']) && $is_amount_fit_minimum) {
+        $options['partial'] = t('Pay partial amount. Minimal !amount', array('!amount' => fnl_store_format_amount($minimal_amount)));
+      }
+
+
+      $form['partial_payment']['partial_payment_enabled'] = array(
+        '#type' => 'radios',
+        '#required' => FALSE,
+        '#title' => t(''),
+        '#default_value' => 'full',
+        '#options' => $options,
+      );
+
+      if (user_is_anonymous() || !empty($products_grouped_by_availability['not_available']) || !$is_amount_fit_minimum) {
+        $form['partial_payment']['description'] = array(
+          '#markup' => '<b>' . t(
+              '- Pay partial amount. Minimal !amount',
+              array('!amount' => fnl_store_format_amount($minimal_amount))
+            ) . '</b>'
+        );
+        if(user_is_anonymous() ) {
+          $form['partial_payment']['description']['#markup'] .= '</br>' . t(
+              'To enable this feature please !login or !register.',
+              array(
+                '!login' => l(
+                  'Login',
+                  'user',
+                  array('query' => drupal_get_destination())
+                ),
+                '!register' => l(
+                  'Register',
+                  'user/register',
+                  array('query' => drupal_get_destination())
+                )
+              )
+            );
+        } else {
+          if(!empty($products_grouped_by_availability['not_available'])) {
+            $form['partial_payment']['description']['#markup'] .= '</br>' . t(
+                'To enable this feature please remove products from your !cart that don\'t support partial payment',
+                array(
+                  '!cart' => l(
+                    'cart',
+                    'cart'
+                  ),
+                )
+              );
+
+            $form['partial_payment']['description']['#markup'] .= theme('oct_store_partial_pay_not_available_list', array('products' => $products_grouped_by_availability['not_available']));
+          }
+          if(!$is_amount_fit_minimum) {
+            $form['partial_payment']['description']['#markup'] .= '</br>' . t(
+                'To enable this feature please add more camps with available partial payment, Total Amount should be greater than !amount',
+                array(
+                  '!amount' => fnl_store_format_amount(OCT_STORE_PARTIAL_MINIMAL_AMOUNT),
+                )
+              );
+          }
+        }
+
+      }
+
+      $form['partial_payment']['partial_amount'] = array(
+        '#type' => 'numberfield',
+        '#step' => '0.01',
+        '#min' => $minimal_amount,
+        '#max' => $order->amount,
+        '#required' => FALSE,
+        '#title' => t('$'),
+        '#default_value' => $minimal_amount,
+        '#states' => array(
+          'visible' => array(
+            ':input[name="partial_payment[partial_payment_enabled]"]' => array('value' => 'partial'),
+          ),
+        ),
+      );
+
+      if (!empty($due_date)) {
+        $form['partial_payment']['partial_amount']['#description'] = t(
+          'You should pay full amount until !date',
+          array('!date' => $due_date->format(OCT_STORE_DATE_FORMAT))
+        );
+      }
+
+
+      array_unshift($form['#submit'], 'oct_store_partial_pay_checkout_submit');
+      array_unshift($form['#validate'], 'oct_store_partial_pay_checkout_validate');
+    }
+  }
+}
+
+/**
+ * Checkout form validate.
+ */
+function oct_store_partial_pay_checkout_validate(&$form, &$form_state) {
+
+  $values = $form_state['values'];
+
+  if(!empty($values['partial_payment']['partial_payment_enabled']) && $values['partial_payment']['partial_payment_enabled'] == 'partial') {
+
+    $order = $form_state['order'];
+    $min_amount = oct_store_partial_pay_get_first_minimal_amount($order);
+    $max_amount = $order->amount;
+    if($values['partial_payment']['partial_amount'] > $max_amount ) {
+      form_set_error('partial_amount', t('The Amount must be less than or equal to !max', array('!max' => fnl_store_format_amount($max_amount))));
+    } else if($values['partial_payment']['partial_amount'] < $min_amount) {
+      form_set_error('partial_payment', t('The Amount must be greater than or equal to !min', array('!min' => fnl_store_format_amount($min_amount))));
+    }
+  }
+}
+
+/**
+ * Checkout form submit.
+ */
+function oct_store_partial_pay_checkout_submit(&$form, &$form_state) {
+
+  $order = &$form_state['order'];
+  $values = $form_state['values'];
+  $cart = &$form_state['cart'];
+
+  if(!empty($values['partial_payment']['partial_payment_enabled']) && $values['partial_payment']['partial_payment_enabled'] == 'partial') {
+
+    if($values['partial_payment']['partial_amount'] != $order->amount) {
+      $order->partial_payment_enabled = TRUE;
+      $order->data['partial_payment']['to_pay_amount'] = $values['partial_payment']['partial_amount'];
+      $order->data['partial_payment']['last_payed_amount'] = $values['partial_payment']['partial_amount'];
+
+      $due_date_obj = oct_store_partial_pay_get_due_date($order, $cart);
+      $order->data['partial_payment']['due_date'] = !empty($due_date_obj) ? $due_date_obj->format(DATE_FORMAT_DATETIME) : '';
+    }
+  }
+}
+
+/**
+ * Implements hook_fnl_store_payment_get_transaction_amount_alter().
+ */
+function oct_store_partial_pay_fnl_store_payment_get_transaction_amount_alter(&$amount, $order) {
+  if(!empty($order->partial_payment_enabled)) {
+    $amount = $order->data['partial_payment']['to_pay_amount'];
+  }
+}
+
+/**
+ * Implements hook_fnl_store_payment_update_order_status_alter().
+ */
+function oct_store_partial_pay_fnl_store_payment_update_order_status_alter(&$status, $original_status, &$order, $transaction) {
+
+  if($order->partial_payment_enabled) {
+
+    $total_payed_amount = oct_store_partial_pay_get_payed_amount_from_all_transactions($order->oid);
+
+    switch ($transaction->status) {
+      case FNL_STORE_PAYMENT_STATUS_SUCCESS:
+        $order->data['partial_payment']['total_payed_amount'] = $total_payed_amount;
+        $order->data['partial_payment']['due_amount'] = $order->amount - $total_payed_amount;
+        if($transaction->amount > 0) {
+          //if not refund, count transaction
+          $order->data['partial_payment']['transactions_count'] = !empty($order->data['partial_payment']['transactions_count']) ? ++$order->data['partial_payment']['transactions_count'] : 1;
+        }
+
+        if(isset($order->data['partial_payment']['to_pay_amount'])) {
+          unset($order->data['partial_payment']['to_pay_amount']);
+        }
+        //don't change success order status. Allow this only for manual changes.
+        if($original_status !== FNL_ORDER_STATUS_PAYMENT_RECEIVED) {
+
+          if($total_payed_amount >= $order->amount) {
+            $status = FNL_ORDER_STATUS_PAYMENT_RECEIVED;
+          } else {
+            $status = FNL_ORDER_STATUS_PAYMENT_PARTIAL;
+            oct_store_emails_send_partial_payment_notification_to_customer($order);
+            oct_store_emails_send_partial_payment_notification_to_admin($order);
+          }
+        }
+        break;
+      case FNL_STORE_PAYMENT_STATUS_FAILURE:
+          $status = !empty($total_payed_amount) ? FNL_ORDER_STATUS_PAYMENT_PARTIAL : FNL_ORDER_STATUS_PAYMENT_FAILED;
+          if(isset($order->data['partial_payment']['to_pay_amount'])) {
+            unset($order->data['partial_payment']['to_pay_amount']);
+          }
+        break;
+      case FNL_STORE_PAYMENT_STATUS_PENDING:
+          $status = FNL_ORDER_STATUS_PAYMENT_PENDING;
+        break;
+    }
+  }
+}
+
+/**
+ * Calculated total payed amount for order.
+ *
+ * @param $oid
+ * @return float
+ */
+function oct_store_partial_pay_get_payed_amount_from_all_transactions($oid) {
+  $q = db_select('fnl_store_payment_transactions', 't')
+    ->condition('oid', $oid)
+    ->condition('status', FNL_STORE_PAYMENT_STATUS_SUCCESS);
+
+  $q->addExpression('sum(t.amount)');
+
+  return (float) $q->execute()->fetchField();
+}
+
+/**
+ * Check order cart products and find if partial pay is available for them.
+ * @return array cart products grouped by availability
+ */
+function oct_store_partial_pay_get_product_groups_by_partial_payment($cart) {
+
+  $products_grouped_by_availability = array();
+
+  //check products in cart
+  foreach ($cart['products'] as $product) {
+
+    if(oct_store_partail_pay_is_available_for_product($product)) {
+      $products_grouped_by_availability['available'][] = $product;
+    } else {
+      $products_grouped_by_availability['not_available'][] = $product;
+    }
+  }
+
+  return $products_grouped_by_availability;
+}
+
+/**
+ * Check is partial payment available for single product in cart
+ *
+ * @param $cart_product
+ * @return bool
+ */
+function oct_store_partail_pay_is_available_for_product($cart_product) {
+
+  $now_date = new DateTime('now');
+
+  if(empty($cart_product->data['full_info']['partial_payment'])) {
+    return FALSE;
+  } else {
+    $date = oct_store_partial_pay_product_due_date($cart_product);
+    if(empty($date)) {
+      return FALSE;
+    }
+
+    $date->sub(new DateInterval('PT' . OCT_STORE_DUE_DATE_DIFF_INTERVAL_HOURS . 'H'));
+
+    if($now_date >= $date) {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
+/**
+ * Get closest due date from cart products.
+ */
+function oct_store_partial_pay_get_due_date($order, $cart) {
+
+  $closest_date = NULL;
+
+  foreach ($cart['products'] as $product) {
+    $date = oct_store_partial_pay_product_due_date($product);
+    if(empty($closest_date)) {
+      $closest_date = $date;
+    } else {
+      $closest_date = (!empty($date) && $date < $closest_date) ? $date : $closest_date;
+    }
+  }
+
+  return $closest_date;
+}
+
+/**
+ * Get product due date.
+ *
+ * @param object $product Cart product object
+ * @return DateTime product due date if exist.
+ */
+function oct_store_partial_pay_product_due_date($product) {
+
+  $date = NULL;
+
+  switch($product->type){
+    case 'product_production':
+      $date = !empty($product->data['full_info']['datetime']) ? date_create_from_format(OCT_STORE_PRODUCTION_DATE_FORMAT, $product->data['full_info']['datetime']) : NULL;
+      break;
+
+    case 'product_camp':
+      $date = !empty($product->data['full_info']['datetime_from']) ? new DateTime($product->data['full_info']['datetime_from']) : NULL;
+      break;
+  }
+
+  return $date;
+}
+
+/**
+ * Calculate minimal amaount for first partial pay.
+ */
+function oct_store_partial_pay_get_first_minimal_amount($order) {
+  $amount = !empty($order->amount) ? $order->amount : 0;
+
+  //25% ceil to second digit after comma
+  return ceil($amount * OCT_STORE_PARTIAL_MINIMAL_AMOUNT_PERCENT) / 100;
+}
+
+/**
+ * Implements hook_template_preprocess().
+ * Alter pay_preprocess_fnl_store_checkout_complete theme function.
+ */
+function oct_store_partial_pay_preprocess_fnl_store_checkout_complete_page(&$vars) {
+
+  $order = $vars['order'];
+  if(!empty($order->data['partial_payment'])) {
+
+    $total_payed = !empty($order->data['partial_payment']['total_payed_amount']) ? $order->data['partial_payment']['total_payed_amount'] : 0;
+    $to_pay = !empty($order->data['partial_payment']['to_pay_amount']) ? $order->data['partial_payment']['to_pay_amount'] : 0;
+
+    if($order->amount > ($total_payed + $to_pay)) {
+      $vars['theme_hook_suggestions'][] = 'fnl_store_checkout_complete_page__partial';
+
+      $vars['site_logo'] = oct_store_emails_site_logo_html();
+
+      $to_pay = !empty($order->data['partial_payment']['to_pay_amount']) ? $order->data['partial_payment']['to_pay_amount'] : 0;
+      $vars['total_payed_and_payed_in_progress'] = $total_payed + $to_pay;
+
+      $vars['payment_left'] = $order->amount - $vars['total_payed_and_payed_in_progress'];
+
+    }
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function oct_store_partial_pay_user_login(&$edit, $account) {
+  global $user;
+
+  if(empty($_SESSION['fnl_store_cart_id'])) {
+    return;
+  }
+
+  //Attach to user their cart if he add some product without login in
+
+
+  $ses_id = $_SESSION['fnl_store_cart_id'];
+  $order = fnl_store_cart_order_load($ses_id);
+  $cart = !empty($order) ? fnl_store_cart_load($order->oid) : NULL;
+
+  if(!empty($cart['products']) && isset($user->roles[OCT_STORE_CUSTOMERS_RID])) {
+    $order->user_id = $user->uid;
+
+    //replace user cart order.
+
+    $old_user_cart_order = fnl_store_cart_order_load($user->uid);
+    if(!empty($old_user_cart_order)) {
+      fnl_store_order_delete($old_user_cart_order->oid);
+    }
+
+    fnl_store_order_save($order);
+  }
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function oct_store_partial_pay_menu_local_tasks_alter(
+  &$data,
+  $router_item,
+  $root_path
+) {
+
+  if(in_array($root_path, array('user', 'user/register'))) {
+
+    if(!empty($_GET['destination'])) {
+      if(!empty($data['tabs'][0]['output'])) {
+
+        foreach ($data['tabs'][0]['output'] as &$tab) {
+          if(in_array($tab['#link']['path'], array('user/login', 'user/register'))) {
+            $tab['#link']['localized_options']['query']['destination'] = $_GET['destination'];
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_fnl_store_order_before_save().
+ */
+function oct_store_partial_pay_fnl_store_order_before_save_alter($order) {
+
+  if(!empty($order->data['partial_payment'])) {
+    $record = $order->data['partial_payment'];
+    $record['oid'] = $order->oid;
+
+    //convert timezone to UTC for database
+    if(!empty($record['due_date'])) {
+      $due_date_obj = new DateTime($record['due_date']);
+      $due_date_obj->setTimezone(new DateTimeZone('UTC'));
+      $record['due_date'] = $due_date_obj->format(DATE_FORMAT_DATETIME);
+    }
+
+    db_merge('oct_store_partial_pay')
+      ->key(array('oid' => $order->oid))
+      ->fields($record)
+      ->execute();
+  }
+
+}
+
+/**
+ * Calculate sum of all amounts.
+ *
+ * @param $products
+ * @return int
+ */
+function oct_store_partial_pay_sum_products_amount($products) {
+  $amount = 0;
+  foreach ($products as $product) {
+    $amount += $product->amount;
+  }
+
+  return $amount;
+}

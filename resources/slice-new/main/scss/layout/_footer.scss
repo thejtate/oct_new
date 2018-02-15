@@ -1,0 +1,165 @@
+.site-footer {
+  background: #3b5f94;
+  font-size: 16px;
+  color: #9dc1f2;
+  padding: 20px 0;
+  position: relative;
+
+  @media (min-width: $bp-small) {
+    padding: 40px 0;
+    font-size: 20px;
+  }
+
+  @media (min-width: $bp-middle) {
+    padding: 40px 0;
+    text-align: center;
+  }
+
+  @media (min-width: $bp-large) {
+    font-size: 24px;
+  }
+
+  &:before {
+    @include pseudo-block($left: 50%, $bottom: 100%);
+    background: image-url('bg/sponsors-bg.png');
+    height: 15px;
+    width: 100%;
+    @include transform(translateX(-50%));
+    background-repeat: repeat-x;
+    margin-bottom: -2px;
+    background-position: 0 100%;
+  }
+
+  .logo {
+    @include transition(opacity .3s);
+    margin-bottom: 20px;
+
+    @media (min-width: $bp-middle) {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      opacity: .7;
+    }
+
+    img {
+      display: none;
+      vertical-align: baseline;
+
+      @media (min-width: $bp-small) {
+        display: inline;
+      }
+
+      &.mobile {
+        display: inline;
+
+        @media (min-width: $bp-small) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  p {
+    margin: 0 0 9px;
+    padding-bottom: 10px;
+    position: relative;
+
+    @media (min-width: $bp-small) {
+      line-height: 1.5;
+    }
+
+    @media (min-width: $bp-middle) {
+      display: inline-block;
+      margin: 15px 35px 15px 0;
+      padding-right: 35px;
+    }
+
+    &:before {
+      @include pseudo-block($bottom: 0, $left: 0);
+      background: image-url('bg/dott-a.png');
+      height: 5px;
+      width: 196px;
+
+      @media (min-width: $bp-small) {
+        width: 237px;
+      }
+
+      @media (min-width: $bp-middle) {
+        background: image-url('bg/dott.png');
+        left: auto;
+        bottom: auto;
+        top: 50%;
+        right: 0;
+        @include transform(translateY(-50%));
+        height: 64px;
+        width: 4px;
+      }
+    }
+
+    &:nth-child(2) {
+
+      &:before {
+        display: none;
+
+        @media (min-width: $bp-middle) {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .items {
+
+    .item {
+      position: relative;
+      min-width: 140px;
+
+      @media (min-width: $bp-middle) {
+        display: inline-block;
+        vertical-align: top;
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      text-align: left;
+
+      li {
+        list-style: none;
+        display: block;
+        margin: 15px 0;
+
+        a {
+          position: relative;
+          display: block;
+          text-decoration: none;
+          color: #78a5ff;
+          padding-left: 25px;
+          @include transition(color .3s);
+
+          &:hover {
+            color: #9ac6ff;
+
+            &:before {
+              left: 7px;
+            }
+          }
+
+          &:before {
+            @include pseudo-block($top: 50%, $left: 0);
+            @include oneline-sprite-box($icons, arrow-link);
+            @include transform(translateY(-50%));
+            @include transition(all .3s);
+          }
+        }
+      }
+    }
+  }
+
+  a[href^="tel"] {
+    color: #9dc1f2;
+    text-decoration: none;
+  }
+}

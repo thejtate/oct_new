@@ -1,0 +1,32 @@
+.outer-wrapper {
+  min-height: 100%;
+  @include transition(transform .6s);
+
+  @media (min-width: $bp-small) {
+    overflow-x: hidden;
+    @include transition(transform 0s);
+  }
+
+  .mobile-nav & {
+    @include translate3d(calc(44px - 90.5%), 0, 0);
+
+    @media (min-width: $bp-small) {
+      @include translate3d(0, 0, 0);
+    }
+  }
+}
+
+.content-wrapper {
+
+}
+
+.inner-wrapper{
+
+}
+
+.field-collection-container,
+.field-collection-view-final,
+field-collection-view {
+	border: none;
+	padding: 0px;
+}

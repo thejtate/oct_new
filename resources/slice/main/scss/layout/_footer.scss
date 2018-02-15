@@ -1,0 +1,85 @@
+.site-footer {
+
+  .inner {
+    background: image-url('bg/bg-footer.png');
+    width: 944px;
+    height: 126px;
+    position: relative;
+    padding-bottom: 33px;
+  }
+
+  .logo {
+    width: 200px;
+    height: 108px;
+    font-family: $atlas;
+    font-size: 20px;
+    color: #7ea9e5;
+    text-align: center;
+    position: relative;
+    top: 20px;
+    text-shadow: -2px 2px 0 #2f4c76;
+    left: 230px;
+
+    &:before {
+      @include pseudo-block($top: -20px, $left: -166px);
+      @include oneline-sprite-box($icons, pigs)
+    }
+  }
+
+  .contact-info {
+    position: absolute;
+    top: 30px;
+    width: 408px;
+    right: 60px;
+    color: #1f2f4d;
+    font-size: 15px;
+    font-family: $HumanaBold;
+    text-align: center;
+    line-height: 25px;
+
+    p {
+      margin: 0;
+    }
+
+    span {
+      margin-left: 15px;
+      display: inline-block;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .footer-nav {
+    width: 412px;
+    text-align: center;
+    padding-top: 3px;
+    position: absolute;
+    right: 65px;
+    top: 76px;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        display: inline-block;
+        padding: 0 10px;
+        border-left: 2px solid #1f2f4d;
+
+        &:first-child {
+          border-left: none;
+        }
+      }
+
+      a {
+        font-size: 15px;
+        font-family: $HumanaBold;
+        color: #b2d1ff;
+        text-decoration: none;
+      }
+    }
+  }
+}

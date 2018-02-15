@@ -1,0 +1,355 @@
+&.page-ftb-tickets {
+
+  .title {
+    padding: 0;
+
+    img {
+      position: relative;
+      left: 50%;
+      @include transform(translateX(-50%));
+      display: block;
+    }
+  }
+
+  .form-item-guests-seated {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 10px solid #f5c658;
+
+    label {
+      margin-bottom: 15px;
+      font-weight: normal;
+    }
+
+    .form-textarea-wrapper {
+      padding-left: 20px;
+    }
+  }
+
+  #oct-store-ftb-table {
+
+    thead tr th {
+      padding: 20px 5px;
+
+      &:first-child {
+        width: 375px;
+      }
+    }
+
+    td:nth-child(3) .form-item {
+      margin: 0;
+    }
+
+    .guest-names-fieldset {
+      border: none;
+      margin: 0;
+      padding: 5px 0 0 10px;
+
+      @media (min-width: $bp-small) {
+        padding: 10px 0 0 15px;
+      }
+
+      @media (min-width: $bp-middle) {
+        padding: 20px 0 0 15px;
+      }
+
+      .form-item {
+        display: none;
+
+        label {
+          font-family: $bitter-italic;
+          font-weight: normal;
+          font-size: 12px;
+
+          @media (min-width: $bp-small) {
+            font-size: 16px;
+          }
+        }
+
+        input {
+          width: 270%;
+          max-width: 300px;
+
+          @media (min-width: $bp-small) {
+            width: 100%;
+            max-width: none;
+          }
+        }
+      }
+    }
+  }
+
+  h2 {
+    margin: 0 0 35px;
+    padding-bottom: 15px;
+    font-size: 31px;
+    color: #3b5f94;
+    font-family: $peralta-regular;
+    position: relative;
+
+    &:before {
+      @include pseudo-block($bottom: 0, $right: 0, $left: 0);
+      background: image-url('bg/dott-post.png');
+      height: 5px;
+    }
+  }
+
+  .webform-component-select {
+    max-width: 320px;
+    display: inline-block;
+    margin-right: 100px;
+    margin-bottom: 40px;
+  }
+
+  .left-part {
+    margin-bottom: 30px;
+
+    @media (min-width: $bp-small) {
+      float: left;
+      width: 60%;
+      margin: 0;
+    }
+
+    @media (min-width: $bp-middle) {
+      width: 70%;
+    }
+
+    .btn-wrap {
+      float: right;
+      margin-bottom: 40px;
+    }
+
+    .form-type-textfield {
+      margin-bottom: 7px;
+
+      @media (min-width: $bp-small) {
+        margin-bottom: 20px;
+      }
+
+      @media (min-width: $bp-middle) {
+        margin-bottom: 30px;
+      }
+
+      label {
+        display: inline-block;
+        margin-right: 50px;
+      }
+
+      input {
+        width: 55%;
+      }
+    }
+
+    .sponsor {
+      padding: 15px 0;
+      border-bottom: 4px solid #f5c658;
+
+      span {
+        font-size: 25px;
+        color: #cf760f;
+      }
+    }
+
+    & > .btn-wrap {
+      float: right;
+      margin-bottom: 30px;
+    }
+  }
+
+  .right-part {
+
+    @media (min-width: $bp-small) {
+      float: right;
+    }
+
+    img {
+      display: block;
+      margin: 0 auto;
+
+      @media (min-width: $bp-small) {
+        margin: 0;
+      }
+    }
+
+    .content .field-items a {
+      background: image-url('bg/item-desc.png');
+      display: block;
+      width: 271px;
+      height: 121px;
+      font-size: 28px;
+      color: #9dc1f2;
+      font-family: $peralta-regular;
+      position: relative;
+      text-decoration: none;
+      padding: 20px;
+      text-align: center;
+      margin: 0 auto;
+
+      @media (min-width: $bp-small) {
+        margin: 0;
+      }
+
+      &:before {
+        @include pseudo-block($top: 54%, $right: 18px);
+        @include oneline-sprite-box($icons, arrow-link-right);
+        @include transform(translateY(-50%));
+      }
+    }
+  }
+
+  tbody {
+    border: none;
+  }
+
+  .add-elem {
+    padding: 25px 0 25px 60px;
+    display: block;
+    border-bottom: 10px solid #f5c658;
+  }
+
+  .text {
+    @include clear-box();
+    position: relative;
+    padding: 40px 0;
+
+    h5 {
+      font-size: 18px;
+      color: #cf760f;
+      font-family: $peralta-regular;
+      margin: 0;
+
+      @media (min-width: $bp-small) {
+        font-size: 22px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 25px;
+      }
+
+      @media (min-width: $bp-large) {
+        font-size: 28px;
+      }
+    }
+
+    &:before {
+      @include pseudo-block($top: 0, $right: 0, $left: 0);
+      background: image-url('bg/dott-post.png');
+      height: 5px;
+    }
+  }
+
+  i {
+    font-family: $bitter-italic;
+    font-size: 12px;
+
+    @media (min-width: $bp-small) {
+      font-size: 16px;
+    }
+  }
+
+  .total {
+    padding: 20px 11px 20px 0;
+    text-align: right;
+    position: relative;
+    @include clearfix();
+    margin-bottom: 25px;
+    border-bottom: 10px solid #f5c658;
+
+    @media (min-width: $bp-middle) {
+      padding: 20px 44px 20px 0;
+    }
+
+    @media (min-width: $bp-large) {
+      padding: 20px 70px 20px 0;
+    }
+
+    span {
+      margin-right: 15px;
+
+      &:first-child {
+        float: left;
+        text-align: left;
+        width: 147px;
+
+        @media (min-width: $bp-small) {
+          width: 239px;
+        }
+
+        @media (min-width: $bp-middle) {
+          width: 410px;
+
+        }
+
+      }
+    }
+  }
+
+  .table {
+    width: 100%;
+    border-bottom: 10px solid #f5c658;
+    font-size: 12px;
+
+    @media (min-width: $bp-small) {
+      font-size: 17px;
+    }
+
+    @media (min-width: $bp-middle) {
+      font-size: 18px;
+    }
+
+    @media (min-width: $bp-large) {
+      font-size: 19px;
+    }
+
+
+    strong {
+      display: block;
+    }
+
+    thead {
+      background: #f5c658;
+
+      th {
+        font-size: 13px;
+        font-family: $podkova-bold;
+        color: #cc6d00;
+        text-transform: uppercase;
+        padding: 10px 4px;
+
+        @media (min-width: $bp-small) {
+          font-size: 15px;
+          padding: 20px 5px;
+        }
+      }
+    }
+
+    td {
+      padding: 4px 2px;
+      vertical-align: top;
+
+      @media (min-width: $bp-small) {
+        padding: 7px 2px;;
+      }
+
+      @media (min-width: $bp-middle) {
+        padding: 20px 0;
+      }
+
+      .form-item {
+
+        label {
+          margin-right: 0;
+        }
+      }
+
+    }
+
+    tr {
+      border-bottom: 3px solid #f5c658;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}

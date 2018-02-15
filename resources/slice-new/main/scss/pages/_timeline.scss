@@ -1,0 +1,227 @@
+&.page-timeline {
+
+  .content-wrapper {
+      padding: 0px !important; 
+
+      h4 {
+          color: $blue;
+          font-size: 20px;
+          font-family: peralta-regular;
+          margin: 10px 0;
+
+          @media (min-width: $bp-small) {
+            font-size: 30px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 38px;
+          }
+
+        }
+
+    .text-top {
+        position: relative;
+
+      &:before { 
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 100vw;
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+        background: #f7c757;
+        z-index: -2;
+      }
+    }
+
+    .b-history {
+
+      .history-list {
+        position: relative;
+        padding-bottom: 0px;
+        z-index: 1;
+
+        @media (min-width: $bp-small) {
+          padding-bottom: 0px;
+        }
+
+        &:before {
+          @include pseudo-block($left: 33px, $top: 0, $bottom: 0);
+          background: $dark-orange;
+          width: 3px;
+          z-index: -1;
+
+          @media (min-width: $bp-small) {
+            left: 50%;
+            margin-left: -1px;
+            right: auto;
+          }
+        }
+
+        .date {
+          margin-bottom: 20px;
+          font-size: 15px;
+          font-family: $podkova-bold;
+          color: $light-orange;
+          margin-left: -15px;
+
+          @media (min-width: $bp-small) {
+            margin-bottom: 34px;
+            text-align: center;
+            font-size: 20px;
+            margin-left: 0;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 24px;
+          }
+
+          span {
+            background: $dark-orange;
+            display: inline-block;
+            vertical-align: top;
+            padding: 7px 18px;
+            line-height: 1;
+
+            @media (min-width: $bp-small) {
+              padding: 7px 56px;
+            }
+          }
+        }
+
+        .items-wrapper {
+          margin-bottom: 20px;
+          @include clearfix();
+
+          @media (min-width: $bp-small) {
+            margin-bottom: 34px;
+          }
+        }
+
+        .item {
+          width: 85%;
+          background: #3d6092;
+          position: relative;
+          padding: 16px;
+          margin-top: 20px;
+          float: right;
+
+          img {
+
+            @media (min-width: $bp-small) {
+              margin-bottom: -12px;
+            }
+          }
+
+          h3 {
+            font-family: $peralta-regular;
+            color: $light-blue;
+            font-size: 18px;
+            margin: 10px 0 10px 0;
+
+            @media (min-width: $bp-small) {
+              font-size: 22px;
+            }
+
+            @media (min-width: $bp-middle) {
+              font-size: 28px;
+            }
+          }
+
+          p {
+            font-family: $podkova-regular;
+            color: $light-blue;
+          }
+
+          &:nth-child(odd) {
+            @include transform(translate(-30px, 0));
+          }
+
+          &:nth-child(even) {
+            @include transform(translate(-30px, 0));
+
+            @media (min-width: $bp-small) {
+              @include transform(translate(30px, 0));
+            }
+          }
+
+          &.animating-end {
+            @include transform(translate(0, 0));
+          }
+
+          @media (min-width: $bp-small) {
+            padding: 28px;
+            margin-top: 85px;
+            float: left;
+            width: 46%;
+          }
+
+          &:before {
+            @include pseudo-block($top: 50%, $right: 100%);
+            @include translate(0, -50%);
+            border-right: 12px solid #3d6092;
+            border-top: 13px solid transparent;
+            border-bottom: 13px solid transparent;
+
+            @media (min-width: $bp-small) {
+              left: 100%;
+              right: auto;
+              border-right: none;
+              border-left: 12px solid $blue;
+            }
+          }
+
+          &:first-child {
+            margin-top: 0;
+          }
+
+          @media (min-width: $bp-small) {
+
+            &:nth-child(even) {
+              float: right;
+
+              &:before {
+
+                @media (min-width: $bp-small) {
+                  left: auto;
+                  right: 100%;
+                  border-right: 12px solid $blue;
+                  border-left: none;
+                }
+              }
+            }
+          }
+
+          * {
+            color: $light-blue;
+          }
+        }
+      }
+
+      .info h3 {
+        margin-bottom: 5px;
+      }
+
+      .img {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+    }
+
+    .field-collection-view {
+      padding: 0px;
+      margin-top: 20px; 
+    }
+
+    .field-collection-container,
+    .field-collection-view {
+      border: 0px; 
+    }
+
+  }
+}

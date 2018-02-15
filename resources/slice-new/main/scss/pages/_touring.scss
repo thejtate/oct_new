@@ -1,0 +1,97 @@
+&.page-touring {
+
+  .content-wrapper {
+
+    p {
+      line-height: 1.4;
+    }
+
+    .text {
+      overflow: hidden;
+    }
+
+    .content-top {
+      position: relative;
+      @include clearfix();
+      margin-bottom: 30px;
+      padding-bottom: 50px;
+
+      &:before {
+        @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+        height: 5px;
+        background: image-url('bg/dott-post.png');
+      }
+
+      span {
+        color: #cf760f;
+        text-transform: uppercase;
+        font-family: $podkova-bold;
+        display: block;
+        margin: 25px 0 7px 0;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+          position: relative;
+          padding-left: 15px;
+          margin-bottom: 7px;
+
+          &:before {
+            @include pseudo-block($top: 50%, $left: 0);
+            border-top: 5px solid transparent;
+            border-left: 7px solid #ebb542;
+            border-bottom: 5px solid transparent;
+            @include transform(translateY(-50%));
+          }
+        }
+      }
+
+      .img {
+        float: right;
+        margin-left: 40px;
+      }
+    }
+
+    .content-bottom {
+
+      .img {
+        float: left;
+        margin-right: 40px;
+      }
+
+      h5 {
+        color: #cf760f;
+        font-size: 28px;
+        margin: 0 0 7px;
+        font-family: $podkova-bold;
+      }
+
+      h4 {
+        color: #3b5f94;
+        font-size: 35px;
+        margin: 0 0 7px;
+        font-family: $peralta-regular;
+      }
+
+      .desc {
+        font-family: $bitter-italic;
+        color: #cf760f;
+        font-size: 17px;
+        margin-bottom: 25px;
+        display: block;
+      }
+
+      a {
+        color: #3b5f94;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

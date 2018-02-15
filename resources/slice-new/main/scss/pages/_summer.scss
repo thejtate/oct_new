@@ -1,0 +1,79 @@
+&.page-summer {
+
+  .content-wrapper {
+    padding: 0;
+  }
+
+  p {
+    line-height: 1.4;
+  }
+
+
+  h4 {
+    font-family: $peralta-regular;
+    font-size: 38px;
+    color: #375c98;
+    margin: 0;
+  }
+
+  h5 {
+    font-family: $peralta-regular;
+    font-size: 28px;
+    color: #cf760f;
+    margin: 0;
+  }
+
+  .content-top {
+    position: relative;
+    padding: 50px 0;
+
+    &:before {
+      @include pseudo-block($top: 0, $bottom: 0, $left: 50%);
+      width: 100vw;
+      @include transform(translateX(-50%));
+      background: #f7c757;
+      z-index: -1;
+    }
+
+    .subtitle {
+      font-size: 23px;
+      color: #d37700;
+      text-transform: uppercase;
+      font-family: $podkova-bold;
+    }
+
+    .img {
+      float: right;
+      margin-left: 40px;
+    }
+
+    .text {
+      overflow: hidden;
+    }
+  }
+
+  .content-bottom {
+    padding: 90px 0;
+    @include clearfix();
+
+    .img {
+      float: left;
+      margin-right: 35px;
+    }
+
+    .text {
+      overflow: hidden;
+    }
+
+    .left-part {
+      float: left;
+      width: 700px;
+    }
+
+    .right-part {
+      float: left;
+      width: 400px;
+    }
+  }
+
+}

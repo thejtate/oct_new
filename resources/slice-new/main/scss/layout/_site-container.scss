@@ -1,0 +1,14 @@
+.site-container {
+  width: $width-xsmall;
+  margin: 0 auto;
+
+  @media (min-width: $bp-small) {
+      width: $width-small;
+  }
+  @media (min-width: $bp-middle) {
+      width: $width-middle;
+  }
+  @media (min-width: $bp-large) {
+      width: $width-large;
+  }
+}

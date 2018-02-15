@@ -1,0 +1,130 @@
+&.page-page {
+
+  .content-wrapper {
+
+    .field-items {
+
+      p {
+        font-size: 12px;
+        color: #3B5F94;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+      }
+    }
+
+    h3 {
+      background: image-url('bg/bg-stretchy-titles-center.png') repeat-x;
+      display: inline-block;
+      height: 59px;
+      position: relative;
+      color: #FBFFB2;
+      font-size: 22px;
+      font-family: $atlas;
+      text-shadow: -2px 2px 0 #A65E0C;
+      padding: 11px 0;
+      margin: 0 150px;
+
+      &:before {
+        @include pseudo-block($top: 0, $left: -25px);
+        @include oneline-sprite-box($icons, bg-stretchy-titles);
+      }
+
+      &:after {
+        @include pseudo-block($top: 1px, $right: -18px);
+        @include oneline-sprite-box($icons, bg-stretchy-titles-1);
+      }
+    }
+
+    h5 {
+      text-decoration: underline;
+      font-size: 14px;
+      color: #3B5F94;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+        color: #3B5F94;
+      }
+    }
+
+    .view-content {
+      border-bottom: 3px dotted #D7A625;
+      padding: 10px 0 35px 20px;
+
+      h2 {
+        font-size: 16px;
+        font-family: Georgia, serif;
+        color: #cf760f;
+        margin: 0;
+        padding: 20px 0;
+        font-weight: bold;
+        font-style: italic;
+      }
+
+      .page-page-img {
+        text-align: center;
+        padding: 10px 0;
+
+        img {
+          margin-bottom: 20px;
+        }
+      }
+
+      p {
+        font-size: 12px;
+        color: #3B5F94;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+
+        &.strong {
+          font-weight: bold;
+        }
+
+        a {
+          text-decoration: none;
+          color: #b2366a;
+          border-bottom: 1px dashed #b2366a;
+          white-space: nowrap;
+
+          &:hover {
+            border-bottom: none;
+          }
+        }
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+          margin-bottom: 4px;
+
+          span {
+            font-family: Verdana;
+            font-size: 12px;
+            color: #a93b43;
+            padding: 4px 0;
+            margin-right: -10px;
+            word-wrap: break-word;
+            display: inline-block;
+
+            &:first-child {
+              color: #515894;
+              font-size: 19px;
+              font-family: Georgia, serif;
+              width: 190px;
+              padding: 4px 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}

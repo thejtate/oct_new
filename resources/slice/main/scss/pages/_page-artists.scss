@@ -1,0 +1,39 @@
+&.page-artists {
+
+  .content-inner {
+
+    .view-content {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      @include clearfix();
+
+      .pull-left {
+        width: 38%;
+
+        img {
+          border: 8px solid #d7a625;
+        }
+      }
+
+      .pull-right {
+        width: 62%;
+
+        h5 {
+          font-size: 24px;
+          font-weight: bold;
+          font-family: Georgia, serif;
+          margin: 5px 0 10px;
+          color: #cf6e00;
+        }
+
+        p {
+          color: #3B5F94;
+          font-family: Verdana, Arial, Helvetica, sans-serif;
+          font-size: 12px;
+          margin: 0;
+          padding: 5px 0;
+        }
+      }
+    }
+  }
+}

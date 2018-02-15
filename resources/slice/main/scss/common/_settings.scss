@@ -1,0 +1,15 @@
+$icons: sprite-map('icons/*.png', $spacing: 8px, $layout: 'smart');
+//$h-sprites: sprite-map('h-sprites/*.png',$layout: 'vertical', $spacing: 8px);
+//$v-sprites: sprite-map('v-sprites/*.png', $layout: 'horizontal', $spacing: 8px);
+
+$experimental-support-for-svg: true;
+$experimental-support-for-opera: false;
+
+//width
+
+//fonts
+$HumanaBold:'itc_humana_sans--lt_70713-webfont';
+$HumanaBoldItalic:'itc_humana_sans--lt_70714-webfont';
+$Humanaregular:'itc_humana_sans--lt_70717-webfont';
+$HumanaItalic:'itc_humana_sans--lt_70713-webfont';
+$atlas:'atlas';

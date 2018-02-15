@@ -1,0 +1,218 @@
+<?php
+
+/**
+ * @file
+ * 
+ */
+
+/**
+ * Implements hook_fnl_store_products().
+ */
+function oct_store_donation_fnl_store_products() {
+  return array(
+    'product_donation' => array(
+      'title' => t('Donation'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api()
+ */
+//function oct_store_donation_views_api() {
+//  return array(
+//    'api' => 3,
+//    'path' => drupal_get_path('module', 'oct_store_donation') . '/views',
+//  );
+//}
+
+
+/**
+ * Implements hook_fnl_store_cart_product_prepare_view().
+ *
+ * Prepare product formatted array of properties. For using in different render templates.
+ */
+function oct_store_donation_fnl_store_cart_product_prepare_view($product) {
+
+  if($product->type === 'product_donation') {
+
+    $product->properties_list[] = array(
+      'title' =>  t('Company Name'),
+      'value' => $product->data['full_info']['company_name'],
+    );
+
+    $product->properties_list[] = array(
+      'title' =>  t('First name'),
+      'value' => $product->data['full_info']['first_name'],
+    );
+
+    $product->properties_list[] = array(
+      'title' =>  t('Last name'),
+      'value' => $product->data['full_info']['last_name'],
+    );
+  }
+
+}
+
+
+function oct_store_donation_form($form, &$form_state, $node) {
+  module_load_include('inc','fnl_store', 'includes/fnl_store.checkout');
+  $form_state['node'] = $node;
+
+  $form['amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Please send me an invoice for:'),
+    '#required' => TRUE,
+  );
+
+  $form['first_name'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('First Name'),
+  );
+
+  $form['last_name'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Last Name'),
+  );
+
+  $form['company_name'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Company Name (as you would like it to appear in publications)'),
+  );
+
+  $form['address'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Address'),
+  );
+
+  $form['city'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('City'),
+  );
+
+  $form['state'] = array(
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('State'),
+    '#default_value' => 'OK',
+    '#options' => fnl_store_usa_states_options(),
+  );
+
+  $form['zip'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Zip'),
+    '#maxlength' => 5,
+  );
+
+  $form['phone'] = array(
+    '#type' => 'masked_input',
+    '#mask' => '(999)999-9999',
+    '#required' => TRUE,
+    '#title' => t('Phone'),
+  );
+
+  $form['email'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Email'),
+    '#element_validate' => array('fnl_store_element_validate_email'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Check Out'),
+  );
+
+  return $form;
+}
+
+/**
+ * Validate callback for .
+ */
+function oct_store_donation_form_validate(&$form, &$form_state) {
+
+  if ($form_state['values']['amount'] !== ''
+    && (!is_numeric( $form_state['values']['amount'])
+    || intval($form_state['values']['amount']) != $form_state['values']['amount']
+    || $form_state['values']['amount'] <= 0)
+  ) {
+    form_set_error('amount', t('Amount must be a positive integer.'));
+  }
+}
+
+/**
+ * Submit callback for .
+ */
+function oct_store_donation_form_submit(&$form, &$form_state) {
+  $values = $form_state['values'];
+
+  $product = new stdClass();
+  $product->nid = $form_state['node']->nid;
+  $product->qty = 1;
+  $product->name = 'Donation';
+  $product->type = 'product_donation';
+  $product->sku = 'product_donation_' . $form_state['node']->nid;
+  $product->amount = $values['amount'];
+  $exclude_keys = array('submit', 'form_id', 'form_build_id', 'op', 'form_token');
+  $product->data['full_info'] = array_diff_key(
+    $values,
+    drupal_map_assoc($exclude_keys)
+  );
+
+  //Programmatically create order, add product, and emulate checkout.
+  $order = fnl_store_empty_order();
+  fnl_store_order_save($order);
+  fnl_store_cart_add_product($product, $order->oid);
+
+  $order->data['checkout_values']['user'] = $product->data['full_info'];
+  $order->data['checkout_values']['payment'] = array('method' => 'paypal');
+
+  fnl_store_checkout_start($order);
+  $order->status = FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS;
+  $order->data['type'] = 'donation';
+  fnl_store_order_save($order);
+
+  oct_store_customers_merge($values, $order->oid);
+
+  fnl_store_paypal_pay($order);
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function oct_store_donation_preprocess_node(&$vars) {
+  if($vars['type'] == 'donations') {
+    $vars['content']['form'] = drupal_get_form('oct_store_donation_form', $vars['node']);
+  }
+}
+
+/**
+ * Implements hook_fnl_store_payment_cancel().
+ */
+function oct_store_donation_fnl_store_payment_cancel($order) {
+
+  if(!empty($order->data['type']) && $order->data['type'] == 'donation') {
+
+    $order->status = FNL_ORDER_STATUS_PAYMENT_FAILED;
+    fnl_store_order_save($order);
+
+    drupal_set_message(t('Your PayPal payment was cancelled. Please feel free to continue shopping or contact us for assistance.'));
+
+    $order_cart = fnl_store_cart_load($order->oid);
+
+    if(!empty($order_cart['products'][0]->type)
+      && $order_cart['products'][0]->type == 'product_donation'
+      && !empty($order_cart['products'][0]->nid)
+    ) {
+      drupal_goto('node/' . $order_cart['products'][0]->nid);
+    } else {
+      drupal_goto('<front>');
+    }
+  }
+}

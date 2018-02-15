@@ -1,0 +1,8 @@
+name = OCT sponshorships opportunities
+description = OCT sponshorships opportunities
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+;files[] =
+;dependencies[] = 

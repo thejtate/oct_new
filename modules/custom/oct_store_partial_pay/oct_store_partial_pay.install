@@ -1,0 +1,94 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the  module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function oct_store_partial_pay_schema() {
+  $schema = array();
+
+  $schema['oct_store_partial_pay'] = array(
+    'description' => 'Partial pay normalized info.',
+    'fields' => array(
+      'oid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Order id',
+      ),
+      'due_date' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order due date in UTC timezone',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'due_amount' => array(
+        'type' => 'numeric',
+        'precision' => 11,
+        'scale' => 2,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Due amount',
+      ),
+      'total_payed_amount' => array(
+        'type' => 'numeric',
+        'precision' => 11,
+        'scale' => 2,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Total payed amount',
+      ),
+      'to_pay_amount' => array(
+        'type' => 'numeric',
+        'precision' => 11,
+        'scale' => 2,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Amount to pay (pay in progress). Or 0 if no payment in progress',
+      ),
+      'last_payed_amount' => array(
+        'type' => 'numeric',
+        'precision' => 11,
+        'scale' => 2,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Last payed amount, or curent if in progress.',
+      ),
+      'transactions_count' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Number of transactions',
+      ),
+//      hook_schema_item_fields_
+    ),
+
+    'primary key' => array('oid'),
+
+//    'indexes' => array(
+//      'my_index_01' => array(
+//        'field_3',
+//        'field_4',
+//      ),
+//    ),
+  );
+
+  return $schema;
+}

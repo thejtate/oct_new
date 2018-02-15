@@ -1,0 +1,84 @@
+&.page-class-enrollment {
+
+  .inner-wrapper .content-wrapper {
+    padding: 0 0 80px;
+
+    .top-part {
+      position: relative;
+      padding: 60px 0 0;
+
+      &:before {
+        @include pseudo-block($top: 0, $left: 50%, $bottom: 0);
+        width: 4000px;
+        @include transform(translateX(-50%));
+        background: #f7c757;
+        z-index: -1;
+      }
+    }
+
+    .select2-container {
+      width: 100%;
+    }
+
+    h4 {
+      font-family: $peralta-regular;
+      font-size: 27px;
+      color: #cf760f;
+      width: 325px;
+    }
+
+    .field-type-image {
+      float: right;
+      margin-left: 40px;
+    }
+
+    .products-table {
+      max-width: 800px;
+
+      tr:nth-child(even) {
+        background: #f7c95e;
+      }
+
+      td {
+        padding: 16px;
+      }
+
+      .name {
+        color: #cf760f;
+        font-size: 23px;
+        font-family: $podkova-bold;
+        margin-bottom: 10px;
+      }
+
+      .date, .time {
+        font-size: 19px;
+      }
+
+      .desc-inner {
+        font-family: $bitter-italic;
+        font-size: 15px;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .products-table, .products-head {
+
+      .description {
+        width: 260px;
+      }
+    }
+
+    .ages, .price, .child {
+      width: 135px !important;
+      text-align: center;
+    }
+
+    .child {
+      width: 90px !important;
+      text-align: center;
+    }
+  }
+}

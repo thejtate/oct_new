@@ -1,0 +1,182 @@
+&.page-user-register {
+  background: image-url('bg/bg-body.png');
+
+  .messages {
+    background: image-url('bg/bg-register-repeat.png');
+    padding: 10px 20px 40px 60px;
+    position: relative;
+    margin: 0;
+    border: 0;
+
+    &.error {
+      border: 1px solid #ff0000;
+      margin: 0;
+      list-style-position: inside;
+      padding: 5px;
+    }
+  }
+
+  .outer-wrapper {
+    background: none;
+
+    .site-container {
+
+      &:before {
+        background: none !important;
+      }
+
+      .inner {
+        width: 559px;
+        margin: 0 auto;
+        padding: 5px 0 44px 0;
+
+        &:before {
+          background: none !important;
+        }
+
+        .content-wrapper {
+          background: none;
+
+          .grippie {
+            display: none;
+          }
+
+          .title-form {
+            background: image-url("tmp/bg-title-register.png") 0 0 no-repeat;
+            text-indent: -9999px;
+            width: 559px;
+            height: 208px;
+          }
+
+          .form-registration {
+            background: image-url('bg/bg-register-repeat.png');
+            padding: 15px 20px 40px 60px;
+            position: relative;
+
+            &:before {
+              @include pseudo-block($bottom: -40px, $left: 0, $right: 0);
+              background: image-url('bg/bg-register-bottom.png');
+              height: 44px;
+            }
+
+            .form-top-wrapper {
+              @include clearfix();
+
+              .form-item {
+                float: left;
+              }
+            }
+
+            .form-item {
+              margin: 0 35px 6px 0;
+
+              label {
+                font-family: $Humanaregular;
+                font-size: 16px;
+                display: block;
+                color: #ed9200;
+                line-height: 24px;
+                text-shadow: 0 0 0;
+              }
+
+              &.form-type-textfield, &.form-type-password {
+                @include clearfix();
+
+                .description {
+                  font-family: $Humanaregular;
+                  font-size: 16px;
+                  color: #c9c579;
+                  width: 214px;
+                  float: right;
+                  display: table;
+                }
+              }
+
+              .form-text {
+                font-family: $Humanaregular;
+                font-size: 20px;
+                border-top: 2px solid #ebdd88;
+                border-bottom: 1px solid #f9f3a8;
+                border-right: 2px solid #ebdd88;
+                border-left: 1px solid #f9f3a8;
+                background: #fffdd9;
+                width: 200px;
+                color: #368099;
+                padding: 5px;
+                float: left;
+
+              }
+
+              &.form-type-textarea {
+
+                .form-textarea {
+                  font-size: 11px;
+                  padding: 5px;
+                  font-family: $Humanaregular;
+                  color: #368099;
+                  border-top: 2px solid #ebdd88;
+                  border-bottom: 1px solid #f9f3a8;
+                  border-right: 2px solid #ebdd88;
+                  border-left: 1px solid #f9f3a8;
+                  background: #fffdd9;
+                  width: 100%;
+                  height: 84px;
+                  resize: none;
+                  margin-bottom: 15px;
+                }
+
+                .description {
+                  font-family: $Humanaregular;
+                  font-size: 16px;
+                  text-transform: uppercase;
+                  text-align: center;
+                  color: #d0cc80;
+                  line-height: 20px;
+                  margin-right: 23px;
+                }
+              }
+            }
+
+            .btn-wrap {
+              text-align: center;
+
+              .submit-wrapper {
+                display: inline-block;
+                position: relative;
+
+                &:before {
+                  @include pseudo-block($top: 0, $left: 0);
+                  @include oneline-sprite-box($icons, btn-sign-bef)
+                }
+
+                &:after {
+                  @include pseudo-block($top: 0, $right: 3px);
+                  @include oneline-sprite-box($icons, btn-sign-aft)
+                }
+
+                .form-submit {
+                  background: image-url('bg/btn-bg.png');
+                  border: none;
+                  text-shadow: -2px 2px 0px #d1861d;
+                  font-family: $Humanaregular;
+                  font-size: 20px;
+                  color: #fff9ae;
+                  height: 35px;
+                  line-height: 24px;
+                  padding: 1px 10px 5px 20px;
+                  display: block;
+                  cursor: pointer;
+                  margin: 0 7px;
+
+                  &:hover {
+                    text-shadow: 0 0 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

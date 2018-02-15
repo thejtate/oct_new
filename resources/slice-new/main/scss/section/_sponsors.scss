@@ -1,0 +1,146 @@
+.section-sponsors {
+  text-align: center;
+  padding: 20px 0 40px;
+
+  @media (min-width: $bp-small) {
+    padding: 40px 0;
+  }
+
+  &:after {
+    width: 100%;
+    @include transform(translateX(-50%));
+    @include pseudo-block($top: 0, $left: 50%, $bottom: 0);
+    background: #e3a32d;
+    z-index: -1;
+  }
+
+  h2 {
+    color: #ffd980;
+    font-size: 20px;
+    font-family: $peralta-regular;
+    margin: 0 0 18px 0;
+    text-shadow: -3px 2px 0 #bf8a28;
+    padding: 0 10px;
+
+    @media (min-width: $bp-small) {
+      font-size: 24px;
+      margin: 0 0 25px 0;
+    }
+
+    @media (min-width: $bp-middle) {
+      font-size: 28px;
+      margin: 0 0 35px 0;
+    }
+  }
+
+  p {
+    width: $width-xsmall;
+    margin: 0 auto;
+    font-size: 17px;
+    font-family: $podkova-bold;
+
+    @media (min-width: $bp-small) {
+      width: $width-small;
+      font-size: 20px;
+    }
+
+    @media (min-width: $bp-middle) {
+      width: $width-middle;
+      font-size: 23px;
+    }
+
+    @media (min-width: $bp-large) {
+      width: $width-large;
+    }
+  }
+
+  .items {
+    margin: 0;
+    padding: 0;
+
+    @media (min-width: $bp-large) {
+      margin: 0 0 50px 0;
+    }
+
+    li {
+      list-style: none;
+      display: block;
+      width: 108px;
+      margin: 0 auto 30px;
+
+      @media (min-width: $bp-small) {
+        display: inline-block;
+        margin: 0 43px 30px;
+      }
+
+      @media (min-width: $bp-large) {
+        margin: 0 85px 0 0;
+      }
+
+      a {
+        @include transition(all .3s);
+
+        &:hover {
+          opacity: .7;
+        }
+      }
+
+      &:last-child {
+
+        @media (min-width: $bp-large) {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .sponsors-list {
+    font-family: $podkova-bold;
+    color: #925100;
+    padding: 0;
+    list-style: none;
+    width: $width-xsmall;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.2;
+
+    @media (min-width: $bp-small) {
+      width: $width-small;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    @media (min-width: $bp-middle) {
+      width: $width-middle;
+      font-size: 23px;
+    }
+
+    @media (min-width: $bp-large) {
+      width: $width-large;
+    }
+
+    li {
+      display: inline-block;
+      position: relative;
+      padding-left: 11px;
+      margin-left: 11px;
+
+      &:first-child {
+        margin-left: 0;
+        padding-left: 0;
+
+        &:before {
+          display: none;
+        }
+      }
+      &:before {
+        @include pseudo-block($top: 50%, $left: -4px);
+        @include transform(translateY(-50%));
+        height: 6px;
+        width: 6px;
+        background: #925100;
+        @include border-radius(50%);
+      }
+    }
+  }
+}

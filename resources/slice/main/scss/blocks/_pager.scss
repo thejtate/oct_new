@@ -1,0 +1,52 @@
+.item-list {
+
+  .pager {
+
+    li {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+
+      a {
+        @include text-hide();
+      }
+    }
+
+    .pager-previous {
+
+      a {
+        position: relative;
+        width: 21px;
+        height: 21px;
+        display: block;
+
+        &:before {
+          @include pseudo-block($top: -15px, $left: 0);
+          @include oneline-sprite-box($icons, pager-btn-prev);
+        }
+      }
+    }
+
+    .pager-next {
+
+      a {
+        position: relative;
+        width: 21px;
+        height: 21px;
+        display: block;
+
+        &:before {
+          @include pseudo-block($top: -15px, $left: 0);
+          @include oneline-sprite-box($icons, pager-btn);
+        }
+      }
+    }
+
+    .pager-current {
+      color: #FFF9AE;
+      font-family: $HumanaBold;
+      font-size: 16px;
+      padding: 0 20px;
+    }
+  }
+}

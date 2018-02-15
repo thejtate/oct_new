@@ -1,0 +1,66 @@
+.page {
+  @import "page-page";
+  @import "page-about";
+  @import "page-user";
+  @import "contact-us";
+  @import "register";
+  @import "page-artists";
+  @import "page-what-we-do";
+  @import "page-camps";
+  @import "description";
+  @import "fun-extras";
+  @import "fairy";
+  @import "page-message-board";
+  @import "store-camps";
+  @import "page-store-checkout";
+  @import "cart";
+
+
+&.page-store-camps .content-inner .content .container-inline-date .form-item-birth-date > label {
+  vertical-align: top;
+}
+  .container-inline-date .date-padding {
+    padding: 0 !important;
+    float: none !important;
+
+    .form-item{
+      margin-right: 5px;
+    }
+  }
+
+  .content-inner{
+    color: #3b5f94;
+    font-family: $Humanaregular;
+    font-size: 16px;
+  }
+
+  .profile {
+    color: #3B5F94;
+
+    h3 {
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .field {
+      margin-bottom: 8px;
+
+      .field-label {
+        margin-bottom: 2px;
+      }
+
+      .field-item {
+        font-size: 12px;
+      }
+    }
+
+    dt {
+      color: #3B5F94;
+    }
+
+    dd {
+      color: #3B5F94;
+      font-size: 12px;
+    }
+  }
+}

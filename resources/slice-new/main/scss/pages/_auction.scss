@@ -1,0 +1,75 @@
+&.page-auction {
+
+  .inner-wrapper {
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .title {
+      padding: 0;
+
+      img {
+        position: relative;
+        left: 50%;
+        @include transform(translateX(-50%));
+        display: block;
+      }
+    }
+
+    .cols {
+      margin-bottom: 70px;
+    }
+
+    ul {
+      list-style: none;
+
+      li {
+        margin-bottom: 4px;
+      }
+    }
+
+    p {
+      margin: 0 0 25px;
+
+      span {
+        display: block;
+        margin-top: 15px;
+        color: #cf760f;
+        font-family: $bitter-italic;
+        font-size: 17px;
+
+        strong {
+          font-size: 18px;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    h4, h5 {
+      font-family: $peralta-regular;
+    }
+
+    h5 {
+      color: #cf760f;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+    }
+
+    h4 {
+      font-size: 38px;
+      color: #375c98;
+      margin: 0 0 45px;
+      padding-bottom: 10px;
+      position: relative;
+
+      &:before {
+        @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+        background: image-url('bg/dott-post.png');
+        height: 5px;
+      }
+    }
+  }
+}

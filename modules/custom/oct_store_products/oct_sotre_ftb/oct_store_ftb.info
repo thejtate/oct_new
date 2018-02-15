@@ -1,0 +1,8 @@
+name = OCT store Fairy Tale Ball products
+description = OCT store Fairy Take Ball products
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+;files[] =
+;dependencies[] = 

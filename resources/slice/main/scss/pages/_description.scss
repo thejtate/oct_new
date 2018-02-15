@@ -1,0 +1,46 @@
+&.page-description {
+  color: #3B5F94;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+
+
+  .site-container{
+    .view-content{
+      .views-row{
+        padding: 10px 0;
+
+        h4{
+          margin: 0 0 10px 0;
+          color: #CF6E00;
+          font-family: Georgia, serif;
+          font-size: 24px;
+          font-weight: bold;
+        }
+
+        p{
+          margin: 0;
+        }
+
+        ul{
+          margin: 7px 0;
+          padding: 0;
+
+          li{
+            list-style: none;
+            @include clearfix();
+
+            span{
+              float: left;
+              width: 25%;
+
+              &:first-child{
+                width: 50%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}

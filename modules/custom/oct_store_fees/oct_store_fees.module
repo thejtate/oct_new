@@ -1,0 +1,235 @@
+<?php
+
+/**
+ * @file
+ * OCT store fees
+ */
+
+function oct_store_fees_types_info() {
+  return array(
+    'product_handling' => array(
+      'handler' => 'oct_store_fees_product_handler',
+    ),
+    't_shirt_handling' => array(
+      'handler' => 'oct_store_fees_t_shirt_handler',
+    )
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function oct_store_fees_permission() {
+  $return = array();
+
+  $return['oct_store_fees_administer'] = array(
+    'title' => t('Administer OCT store fees'),
+    'description' => t('Allow to the user to administer OCT store fees.'),
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function oct_store_fees_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_fees') . '/views',
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_fees_theme() {
+  $return = array();
+
+  $return['oct_store_fees'] = array(
+    'variables' => array(
+      'data' => NULL,
+    ),
+    'template' => 'templates/oct-store-fees'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_fnl_store_cart_calculation_alter().
+ */
+function oct_store_fees_fnl_store_cart_calculation_alter(&$order, $cart) {
+
+  //remove old order fees
+  $order->data['amount_modifications']['fees'] = array();
+
+  if(empty($cart['products'])) {
+    return;
+  }
+
+  $fees_types = oct_store_fees_types_info();
+  $fees = oct_store_fees_load_active();
+  
+  foreach ($fees as $fee) {
+
+    if(!empty($fees_types[$fee->type]['handler']) && function_exists($fees_types[$fee->type]['handler'])) {
+      call_user_func_array($fees_types[$fee->type]['handler'], array($order, $cart, $fee, $fees_types[$fee->type]));
+    }
+  }
+}
+
+/**
+ * Handler calculating default fees.
+ */
+function oct_store_fees_product_handler(&$order, $cart, $fee, $fee_type_info) {
+
+  $fee_amount = 0;
+  foreach ($cart['products'] as $product) {
+
+    if(in_array($product->type, $fee->products)) {
+
+
+      if($fee->percent_fixed === 'fixed') {
+        $product_count = $product->qty;
+        $fee_amount += $product_count * $fee->amount;
+      } elseif($fee->percent_fixed === 'percent') {
+        $fee_amount += $product->qty * $product->amount * $fee->amount / 100;
+      }
+    }
+  }
+
+  if(!empty($fee_amount)) {
+    $order->data['amount_modifications']['fees'][] = array(
+      'title' => $fee->title,
+      'type' => 'fee',
+      'value' => $fee_amount,
+    );
+    $order->amount = $order->amount + $fee_amount;
+  }
+
+}
+
+/**
+ * Handler calculating default fees.
+ */
+function oct_store_fees_t_shirt_handler(&$order, $cart, $fee, $fee_type_info) {
+
+  $fee_total_amount = 0;
+
+  $products_grouped_by_children = array();
+
+  foreach ($cart['products'] as $product) {
+    //make product groups for the same child
+    if(in_array($product->type, $fee->products) && !empty($product->data['child_info'])) {
+      $full_child_info_string = trim(strtolower($product->data['child_info']['first_name']));
+      $full_child_info_string .= '_' . trim(strtolower($product->data['child_info']['last_name']));
+      $full_child_info_string .= '_' . trim(strtolower($product->data['child_info']['birth_date']));
+
+      $products_grouped_by_children[$full_child_info_string][] = $product;
+    }
+  }
+
+  foreach ($products_grouped_by_children as $child => $child_products) {
+
+    foreach ($child_products as $delta => $product) {
+
+      if(!empty($product->data['full_info']['t_shirt']) && !empty($product->data['child_info']['t-shirt'])) {
+
+        if ($fee->percent_fixed === 'fixed') {
+          $fee_total_amount += $fee->amount;
+        }
+        elseif ($fee->percent_fixed === 'percent') {
+          $fee_total_amount += $product->amount * $fee->amount / 100;
+        }
+        break; //apply t-shirt fee only once for the same child
+
+      }
+    }
+  }
+
+  if(!empty($fee_total_amount)) {
+    $order->data['amount_modifications']['fees'][] = array(
+      'title' => $fee->title,
+      'type' => 'fee',
+      'value' => $fee_total_amount,
+    );
+    $order->amount = $order->amount + $fee_total_amount;
+  }
+}
+
+/**
+ * Load active discounts.
+ *
+ * @return array
+ */
+function oct_store_fees_load_active($reset = FALSE) {
+
+  $cid = 'oct_store_fees_load_active';
+
+  if(!$reset && $cache = cache_get($cid)) {
+    return $cache->data;
+  } else {
+
+    module_load_include('inc', 'fnl_store', 'includes/fnl_store.helpers');
+    $result = fnl_store_views_retrieve('oct_store_fees_data', 'default');
+
+    $results_keyed_by_nid = oct_store_fees_prepare_fees($result);
+
+    cache_set($cid, $results_keyed_by_nid);
+    return $results_keyed_by_nid;
+  }
+}
+
+/**
+ * Load active discounts for product.
+ *
+ * @return array
+ */
+function oct_store_fees_load_product_fees($product_id, $reset = FALSE) {
+
+  $all_fees = oct_store_fees_load_active($reset);
+
+  $product_fees  = array_filter(
+    $all_fees,
+    function ($v) use($product_id) {
+      return (!empty($v->products) && in_array($product_id, $v->products) && $v->type == 'product_handling');
+    }
+  );
+
+  return $product_fees;
+}
+
+/**
+ * Formatting fees view result.
+ */
+function oct_store_fees_prepare_fees($view_result) {
+
+  $results_keyed_by_nid = array();
+  foreach ($view_result as &$item) {
+    $item->products = !empty($item->products) ? explode(', ', $item->products) : array();
+    $results_keyed_by_nid[$item->nid] = $item;
+  }
+
+  return $results_keyed_by_nid;
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function oct_store_fees_node_presave($node) {
+  //reset fees cache
+  if($node->type === 'store_fee') {
+    cache_clear_all('oct_store_fees_load_active', 'cache');
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function oct_store_fees_node_delete($node) {
+  //reset fees cache
+  if($node->type === 'store_fee') {
+    cache_clear_all('oct_store_fees_load_active', 'cache');
+  }
+}

@@ -1,0 +1,14 @@
+.make-donation-wrapper {
+  float: right;
+  padding-bottom: 15px;
+
+  .make-donation-code {
+    display: none;
+  }
+
+  a {
+    display: block;
+    @include oneline-sprite-box($icons, MakeDonation);
+    font-size: 0;
+  }
+}

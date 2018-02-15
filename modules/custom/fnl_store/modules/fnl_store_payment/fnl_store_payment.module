@@ -1,0 +1,245 @@
+<?php
+
+/**
+ * @file
+ * Funnel store payment
+ */
+
+// Local payment transaction status definitions:
+
+define('FNL_STORE_PAYMENT_STATUS_PENDING', 'pending');
+define('FNL_STORE_PAYMENT_STATUS_SUCCESS', 'success');
+define('FNL_STORE_PAYMENT_STATUS_FAILURE', 'failure');
+
+module_load_include('inc', 'fnl_store_payment', 'includes/fnl_store_payment.db');
+
+/**
+ * Implements hook_menu().
+ */
+function fnl_store_payment_menu() {
+  $items = array();
+
+  $items['admin/settings/funnel-store/payments'] = array(
+    'title' => 'Payment configuration',
+    'description' => 'Description',
+    'access callback' => 'user_access',
+    'access arguments' => array('fnl store settings administer'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fnl_store_payment_settings_form'),
+    'file' => 'includes/fnl_store_payment.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function fnl_store_payment_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'fnl_store_payment') . '/views',
+  );
+}
+
+
+/**
+ * Return list of payment providers with settings.
+ * @see hook_fnl_store_payment_providers
+ *
+ * @return array
+ */
+function fnl_store_payment_providers() {
+  return module_invoke_all('fnl_store_payment_providers');
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * Alter checkout form
+ */
+function fnl_store_payment_form_fnl_store_checkout_form_alter(&$form, &$form_state) {
+
+  if(empty($form_state['cart']) || empty($form_state['order'])) {
+    return;
+  }
+
+  $form['payment'] = array(
+    '#type' => 'fieldset',
+    '#tree' => TRUE,
+    '#title' => t('Payment'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+  $providers = fnl_store_payment_enabled_providers_info();
+  $provider_options = fnl_store_payment_providers_options($providers, 'checkout_description');
+  $first_provider = !empty($provider_options) ? current(array_keys($provider_options)) : NULL;
+
+  if(!empty($providers)) {
+
+    //if(variable_get('fnl_store_payment_hide_single', TRUE)); TODO: single option
+
+    $form['payment']['method'] = array(
+      '#type' => 'radios',
+      '#required' => FALSE,
+      '#title' => t('Payment method'),
+      '#options' => $provider_options,
+      '#default_value' => $first_provider,
+    );
+
+  } else {
+    $config_link = l('config', 'admin/config/funnel-store/payments', array('query' => drupal_get_destination()));
+    $form['payment']['message'] = array(
+      '#markup' => '<div>' . t('Please setup at least one payment provider !link', array('!link' => $config_link)) . '</div>',
+    );
+    $form['submit']['#access'] = FALSE;
+  }
+
+
+  $form['#submit'][] = 'fnl_store_payment_checkout_submit';
+
+}
+
+/**
+ * Form submit.
+ */
+function fnl_store_payment_checkout_submit($form, &$form_state) {
+  if (!empty($form_state['values']['payment']['method'])) {
+    fnl_store_payment_pay($form_state['values']['payment']['method'], $form_state['order']);
+  }
+}
+
+/**
+ * Start payment
+ *
+ * @param string $payment_method
+ * @param object $order
+ */
+function fnl_store_payment_pay($payment_method, &$order) {
+
+  $providers = fnl_store_payment_providers();
+
+  if(!empty($providers[$payment_method]['payment_callback'])) {
+
+    $payment_callback = $providers[$payment_method]['payment_callback'];
+
+    if (function_exists($payment_callback)) {
+      $order->status = FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS;
+      fnl_store_order_save($order);
+      call_user_func($payment_callback, $order);
+    }
+  }
+}
+
+/**
+ * Get payment amount from order for next transaction.
+ *
+ * @param $order
+ * @return mixed
+ */
+function fnl_store_payment_get_transaction_amount($order) {
+  $amount = $order->amount;
+
+  drupal_alter('fnl_store_payment_get_transaction_amount', $amount, $order);
+
+  return $amount;
+}
+
+/**
+ * Return array of enabled providers.
+ *
+ * @return array
+ */
+function fnl_store_payment_enabled_providers_info() {
+  $providers = fnl_store_payment_providers();
+  $enabled = array_filter(variable_get('fnl_store_payment_providers_enabled', array()));
+  return array_intersect_key($providers, $enabled);
+}
+
+/**
+ * Return select options.
+ *
+ * @param $providers
+ * @return array
+ */
+function fnl_store_payment_providers_options($providers, $title_key = 'title') {
+  $options = array();
+
+  foreach ($providers as $provider_id => $provider) {
+    $options[$provider_id] = $provider[$title_key];
+  }
+
+  return $options;
+}
+
+/**
+ * Update order status according to transaction status.
+ *
+ * @param $order
+ * @param $transaction
+ */
+function fnl_store_payment_update_order_status($order, $transaction) {
+
+  watchdog('fnl_store_payment', 'Update order status' . '<pre>' . print_r(array('order' => $order, 'transaction' => $transaction), TRUE) .  '</pre>');
+
+  $original_status = $order->status;
+
+  switch ($transaction->status) {
+    case FNL_STORE_PAYMENT_STATUS_SUCCESS:
+      $order->status = FNL_ORDER_STATUS_PAYMENT_RECEIVED;
+      break;
+    case FNL_STORE_PAYMENT_STATUS_FAILURE:
+      $order->status = FNL_ORDER_STATUS_PAYMENT_FAILED;
+      break;
+    case FNL_STORE_PAYMENT_STATUS_PENDING:
+      $order->status = FNL_ORDER_STATUS_PAYMENT_PENDING;
+      break;
+    default:
+      watchdog('fnl_store_payment', 'Unknown payment status @status', array('@status' => $transaction->status));
+      return;//EXIT
+      break;
+  }
+
+  //some modules will change status logic. Like partial payment
+  drupal_alter('fnl_store_payment_update_order_status', $order->status, $original_status, $order, $transaction);
+
+  $order->test_mode = $transaction->test_mode;
+  fnl_store_order_save($order);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function fnl_store_payment_form_fnl_store_admin_form_alter(
+  &$form,
+  &$form_state,
+  $form_id
+) {
+
+  $form['fnl_store_payment_set_payment_failed_interval'] = array(
+    '#type' => 'textfield',
+    '#required' => FALSE,
+    '#title' => t('Interval in hours for changing payment status to failed, if no response coming from payment system.'),
+    '#description' => t('Leave it empty to disable.'),
+    '#default_value' => variable_get('fnl_store_payment_set_payment_failed_interval', 24),
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+}
+
+/**
+ * Implements hook_cronapi().
+ */
+function fnl_store_payment_cronapi($op, $job = NULL) {
+  $items = array();
+
+
+  $items['fnl_store_payment_check_pending_orders'] = array(
+    'description' => 'Check outdated pending orders, and set status "payment Failed"',
+    'rule' => '*/30 * * * *', // Every 30 minutes
+    'callback' => 'fnl_store_payment_check_pending_orders',
+    'file' => 'includes/fnl_store_payment.cron.inc',
+  );
+
+  return $items;
+}

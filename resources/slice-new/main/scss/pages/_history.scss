@@ -1,0 +1,30 @@
+&.page-history {
+
+  .content-wrapper {
+
+    p {
+      line-height: 1.2;
+
+      @media (min-width: $bp-small) {
+        line-height: 1.3;
+      }
+    }
+
+    .col-1 {
+
+      @media (min-width: $bp-small) {
+        padding-right: 27px;
+      }
+
+      .img {
+        margin: 0 20px 5px 0;
+        text-align: center;
+
+        @media (min-width: $bp-small) {
+          float: left;
+          text-align: left;
+        }
+      }
+    }
+  }
+}

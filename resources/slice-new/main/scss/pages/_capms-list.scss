@@ -1,0 +1,39 @@
+&.page-camps-list {
+
+  .tablefield {
+    margin-bottom: 25px;
+    min-width: 70%;
+
+    td {
+      padding: 3px;
+    }
+
+    thead tr {
+      background: #E5B550;
+
+      th {
+        padding: 13px 20px;
+      }
+    }
+
+    tr {
+      border-bottom: none;
+      background: none;
+
+      &.odd {
+        background: #F7C654;
+      }
+    }
+  }
+
+  .sticky-header {
+
+    thead tr {
+      background: #E5B550;
+
+      th {
+        padding: 13px 20px;
+      }
+    }
+  }
+}

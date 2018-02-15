@@ -1,0 +1,859 @@
+&.page-store {
+
+  &.admin-menu .inner-wrapper #oct-store-camps-products-table .fixed {
+    .products-head, .results {
+      margin-top: 29px;
+    }
+  }
+
+  .select2.select2-container {
+    width: 100%;
+  }
+
+  .form-item-step2-parents-alternate-relationship .select2 {
+    min-width: 200px;
+  }
+
+  .inner-wrapper {
+
+    tbody {
+      border: none;
+    }
+
+    .form-item .form-item {
+      margin: 0;
+    }
+
+    th {
+      border-bottom: none;
+    }
+
+    td {
+      position: relative;
+      padding: 7px 5px;
+
+      @media (min-width: $bp-middle) {
+        padding: 0;
+      }
+
+      &:hover .popup-desc {
+        display: block;
+      }
+    }
+
+    h4,h5 {
+      font-family: $podkova-bold;
+      position: relative;
+      margin: 0;
+      font-size: 18px;
+
+      @media (min-width: $bp-small) {
+        font-size: 20px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 23px;
+      }
+    }
+
+    h5 {
+      color: #cf7e2d;
+      margin-bottom: 25px;
+
+      @media (min-width: $bp-middle) {
+        margin-bottom: 0;
+      }
+    }
+
+    h4 {
+      color: #3b5f94;
+      padding: 10px 0;
+    }
+
+    #oct-store-camps-form-wrapper {
+
+      .text {
+        margin-bottom: 0;
+
+        &:before {
+          display: none;
+        }
+
+        p {
+          margin: 0 0 0 0;
+          font-size: 16px;
+
+          @media (min-width: $bp-small) {
+            font-size: 17px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 18px;
+          }
+
+          @media (min-width: $bp-large) {
+            font-size: 19px;
+          }
+        }
+
+        .left-part, .right-part {
+
+          strong {
+            font-size: 12px;
+
+            @media (min-width: $bp-small) {
+              font-size: 16px;
+            }
+          }
+
+          p {
+            font-size: 12px;
+
+            @media (min-width: $bp-small) {
+              font-size: 17px;
+            }
+
+            @media (min-width: $bp-middle) {
+              font-size: 18px;
+            }
+
+            @media (min-width: $bp-large) {
+              font-size: 19px;
+            }
+          }
+        }
+      }
+    }
+
+    .popup-desc {
+      color: #bfdaff;
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 123%;
+      background: #3b5f94;
+      @include transform(translateY(-50%));
+      padding: 15px;
+      z-index: 5;
+      @include box-shadow(-8px 10px 0 0 rgba(0, 0, 0, 0.18));
+      display: none;
+
+      @media (min-width: $bp-small) {
+        width: 455px;
+        padding: 15px 30px;
+      }
+
+      @media (min-width: $bp-middle) {
+        width: 520px;
+        padding: 30px 50px;
+      }
+
+      &:before {
+        @include pseudo-block($top: 50%, $left: -43px);
+        @include transform(translateY(-50%));
+        @include oneline-sprite-box($icons, arrow-desc)
+      }
+
+      h6 {
+        font-family: $peralta-regular;
+        font-size: 12px;
+        margin: 0;
+
+        @media (min-width: $bp-small) {
+          font-size: 22px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 26px;
+        }
+      }
+
+
+      p {
+        margin: 7px 0;
+
+        @media (min-width: $bp-small) {
+          margin: 15px 0;
+        }
+      }
+    }
+
+    tr.full {
+      color: #bf9230;
+
+      .full-mark {
+        text-transform: uppercase;
+        color: #915100;
+        font-family: $podkova-bold;
+      }
+    }
+
+    fieldset {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container-inline-date .date-padding {
+      padding: 0;
+    }
+
+    .fieldset-wrapper {
+      @include clearfix();
+    }
+
+    .left-part, .right-part {
+
+
+      @media (min-width: $bp-small) {
+        float: left;
+      }
+    }
+
+    .select2-container .select2-selection--single {
+      min-width: 80px;
+      font-size: 12px;
+
+      @media (min-width: $bp-small) {
+        min-width: 100px;
+        font-size: 17px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 18px;
+      }
+
+      @media (min-width: $bp-large) {
+        font-size: 19px;
+      }
+    }
+
+    .left-part {
+      margin-bottom: 20px;
+
+      @media (min-width: $bp-small) {
+        width: 52%;
+        padding-right: 10px;
+        margin-bottom: 0;
+      }
+
+      @media (min-width: $bp-middle) {
+        width: 50%;
+        padding-right: 25px;
+      }
+
+      .form-type-radios .form-item {
+        display: inline-block;
+        font-size: 13px;
+        margin-right: 12px;
+
+        @media (min-width: $bp-small) {
+          margin-right: 15px;
+          font-size: 17px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 19px;
+          margin-right: 20px;
+        }
+      }
+
+      .form-type-textfield {
+
+        @media (min-width: $bp-middle) {
+          max-width: 217px;
+          margin-right: 20px;
+          display: inline-block;
+        }
+
+        @media (min-width: $bp-large) {
+          max-width: 250px;
+        }
+
+        &:nth-child(2) {
+          margin-right: 0;
+        }
+      }
+
+      .container-inline-date {
+        display: inline-block;
+        vertical-align: bottom;
+
+        .form-item {
+          display: inline-block;
+          margin-right: 9px;
+
+          @media (min-width: $bp-small) {
+            margin-right: 20px;
+          }
+
+          &:last-child {
+            margin-right: 0;
+            margin-bottom: 0;
+
+            @media (min-width: $bp-middle) {
+              margin-right: 17px;
+            }
+          }
+        }
+      }
+
+      .form-item-children-gender {
+       max-width: 91px;
+
+        @media (min-width: $bp-small) {
+          display: inline-block;
+          vertical-align: bottom;
+          max-width: 100px;
+        }
+
+        @media (min-width: $bp-large) {
+          margin: 0;
+        }
+      }
+    }
+
+    .right-part {
+
+      @media (min-width: $bp-small) {
+        width: 48%;
+        padding-left: 10px;
+      }
+
+      @media (min-width: $bp-middle) {
+        width: 50%;
+        padding-left: 25px;
+      }
+    }
+
+    #edit-step1-children, #edit-step2-parents, #edit-step2-emergency {
+
+      & > legend {
+        font-size: 20px;
+        font-family: $peralta-regular;
+        color: #3b5f94;
+        position: relative;
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        margin-bottom: 10px;
+
+        @media (min-width: $bp-small) {
+          font-size: 26px;
+          margin-bottom: 25px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 31px;
+        }
+
+        &:before {
+          @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+          background: image-url('bg/dott-post.png');
+          height: 5px;
+        }
+      }
+
+      .fieldset-wrapper {
+        legend {
+          color: #cf760f;
+          font-size: 17px;
+          font-family: $podkova-bold;
+
+          @media (min-width: $bp-small) {
+            font-size: 24px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 27px;
+          }
+        }
+      }
+    }
+
+    #edit-step2-emergency > legend {
+      padding: 20px 0;
+      margin-bottom: 20px;
+      font-size: 17px;
+
+      @media (min-width: $bp-small) {
+        padding: 10px 0;
+        margin-bottom: 25px;
+        font-size: 26px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 31px;
+      }
+    }
+
+    #oct-store-camps-products-table {
+      padding-top: 40px;
+
+      .products-wrapper {
+        position: relative;
+
+        &.fixed {
+          padding-top: 80px;
+        }
+      }
+
+      .fixed {
+
+        .products-head {
+          position: fixed;
+          top: 0;
+          z-index: 15;
+          width: $width-xsmall;
+          margin: 0 auto;
+
+          @media (min-width: $bp-small) {
+            width: $width-small;
+          }
+          @media (min-width: $bp-middle) {
+            width: $width-middle;
+          }
+          @media (min-width: $bp-large) {
+            width: $width-large;
+          }
+        }
+      }
+
+      .products-head {
+        background: #ebb542;
+        color: #cc6d00;
+        font-family: $podkova-bold;
+        font-size: 11px;
+        padding: 13px 5px;
+        margin-bottom: 25px;
+        display: table;
+        width: 100%;
+
+        @media (min-width: $bp-small) {
+          font-size: 13px;
+          display: block;
+          padding: 13px 10px;
+          width: auto;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 15px;
+          padding: 13px 20px;
+        }
+
+        span {
+          display: table-cell;
+          padding: 0 2px;
+
+          @media (min-width: $bp-small) {
+            display: inline-block;
+            padding: 0;
+          }
+        }
+
+        .child {
+          font-size: 11px;
+          color: #915100;
+          width: 85px;
+
+          @media (min-width: $bp-small) {
+            font-size: 15px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 20px;
+          }
+        }
+
+        .description {
+          width: 240px;
+        }
+
+        .ages {
+          width: 115px;
+        }
+
+        .price {
+          width: 80px;
+        }
+
+        .ages, .price, .description {
+          text-transform: uppercase;
+        }
+      }
+
+      .results {
+        background: #f7c757;
+        width: 230px;
+        margin: 30px auto;
+
+        @media (min-width: $bp-middle) {
+          float: right;
+          width: auto;
+          position: absolute;
+          right: 0;
+          top: 74px;
+          margin: 0;
+        }
+
+        table {
+          width: 100%;
+
+          @media (min-width: $bp-middle) {
+            width: auto;
+          }
+        }
+
+        th {
+          padding: 11px 4px;
+        }
+
+        td {
+          text-align: right;
+          padding: 10px;
+          border-bottom: 3px solid #fccf65;
+        }
+
+        .name {
+          font-family: $podkova-bold;
+        }
+
+        thead {
+          font-family: $podkova-bold;
+          color: #cc6d00;
+          font-size: 15px;
+          text-transform: uppercase;
+          background: #ebb542;
+        }
+
+        .add-button-wrapper {
+          padding: 20px 8px;
+          text-align: center;
+
+          @media (min-width: $bp-middle) {
+            text-align: left;
+          }
+        }
+      }
+
+      .product-section-wrapper {
+        padding: 0 0 15px 20px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ffdd78;
+
+        @media (min-width: $bp-small) {
+          min-width: 725px;
+          padding: 0 20px 15px 20px;
+        }
+
+        @media (min-width: $bp-middle) {
+          float: left;
+        }
+
+        .products-table {
+          display: none;
+          font-size: 11px;
+          width: 100%;
+
+          @media (min-width: $bp-small) {
+            font-size: 14px;
+            width: auto;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 19px;
+          }
+
+
+
+          tr:nth-child(odd) td {
+            background: #f7c654;
+          }
+        }
+
+        .child {
+          width: 85px;
+
+          .form-type-checkbox input:not(checked) + label:after {
+            top: 0;
+
+            @media (min-width: $bp-middle) {
+              top: 3px;
+            }
+          }
+
+          .form-item {
+            margin: 0;
+          }
+        }
+
+        .description {
+          width: 240px;
+        }
+
+        .ages {
+          width: 120px;
+        }
+
+        .price {
+          width: 90px;
+        }
+
+        .section-name {
+          font-size: 14px;
+          color: #cf760f;
+          font-family: $podkova-bold;
+          position: relative;
+          margin: 0 0 10px;
+          cursor: pointer;
+
+          @media (min-width: $bp-small) {
+            font-size: 18px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 21px;
+            margin: 0;
+          }
+
+          &.active:before {
+            @include transform(translateY(-50%) rotate(90deg));
+          }
+
+          &:before {
+            @include pseudo-block($top: 50%, $left: -20px);
+            @include transform(translateY(-50%));
+            border-top: 8px solid transparent;
+            border-left: 11px solid #ebb542;
+            border-bottom: 8px solid transparent;
+            @include transition(all .3s);
+          }
+        }
+      }
+    }
+
+    #edit-step2-parents {
+      margin-bottom: 0;
+
+      @media (min-width: $bp-small) {
+        margin-bottom: 50px;
+      }
+
+      .select2.select2-container {
+        width: 85%;
+
+        @media (min-width: $bp-small) {
+          width: 100%;
+        }
+      }
+
+      a[href$=".pdf"] {
+        text-align: center;
+        max-width: none;
+        padding-left: 0;
+        font-family: $podkova-regular;
+
+        strong {
+          font-family: $podkova-bold;
+        }
+
+        @media (min-width: $bp-small) {
+          text-align: left;
+          max-width: 570px;
+          padding-left: 60px;
+        }
+
+        &:before {
+          position: static;
+          display: inline-block;
+          @include transform(none);
+
+          @media (min-width: $bp-small) {
+            position: absolute;
+            display: block;
+            @include translateY(-50%);
+          }
+        }
+      }
+
+      .form-wrapper {
+        margin-bottom: 33px;
+
+        @media (min-width: $bp-small) {
+          float: left;
+          width: 50%;
+          margin-bottom: 40px;
+        }
+
+        &:nth-child(1) {
+
+          @media (min-width: $bp-small) {
+            padding-right: 25px;
+          }
+        }
+
+        &:nth-child(2) {
+
+          @media (min-width: $bp-small) {
+            padding-left: 25px;
+          }
+        }
+
+        .form-item {
+          width: 100%;
+          margin-right: 30px;
+
+          @media (min-width: $bp-small) {
+            width: 240px;
+            display: inline-block;
+          }
+
+          &:nth-child(2n) {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    #edit-step2-emergency {
+      margin-bottom: 10px;
+      text-align: center;
+
+      @media (min-width: $bp-small) {
+        border-bottom: 2px solid #ffdd78;
+        text-align: left;
+        margin-bottom: 30px;
+      }
+
+      .form-wrapper {
+
+        @media (min-width: $bp-small) {
+          float: left;
+          width: 50%;
+          margin-bottom: 30px;
+        }
+
+        &:nth-child(1) {
+
+          @media (min-width: $bp-small) {
+            padding-right: 25px;
+          }
+
+          .form-item {
+            width: 240px;
+            display: inline-block;
+            margin-right: 30px;
+
+            &:nth-child(2n) {
+              margin-right: 0;
+            }
+          }
+
+          p {
+            font-family: $bitter-italic;
+            font-size: 14px;
+
+            @media (min-width: $bp-small) {
+              font-size: 16px;
+            }
+          }
+        }
+
+        &:nth-child(2) {
+
+          @media (min-width: $bp-small) {
+            padding-left: 25px;
+          }
+
+          p {
+            font-size: 18px;
+          }
+        }
+
+        .form-radios {
+
+          .form-item {
+            display: inline-block;
+            margin-right: 15px;
+          }
+        }
+
+      }
+    }
+
+    .text {
+      @include clearfix();
+      font-size: 16px;
+      position: relative;
+      padding-bottom: 30px;
+      margin-bottom: 25px;
+
+      &:before {
+        @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+        background: image-url('bg/dott-post.png');
+        height: 5px;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      span {
+        display: block;
+        margin-bottom: 15px;
+      }
+    }
+
+    .bottom-form {
+      text-align: center;
+
+      .btn-wrap {
+        display: block;
+      }
+
+      .desc {
+        max-width: 480px;
+        font-size: 14px;
+        font-family: $bitter-italic;
+        margin: 0 auto 25px auto;
+
+        @media (min-width: $bp-small) {
+          font-size: 18px;
+        }
+      }
+
+      .info {
+
+        @media (min-width: $bp-middle) {
+          float: left;
+        }
+      }
+    }
+  }
+
+  a[href$=".pdf"] {
+    font-family: $podkova-bold;
+    margin: 0;
+    max-width: 232px;
+    padding-left: 38px;
+
+    @media (min-width: $bp-small) {
+      font-family: $podkova-regular;
+      max-width: 570px;
+      padding-left: 60px;
+    }
+
+
+    &:before {
+      background: image_url('bg/download.png') no-repeat;
+      height: 36px;
+      width: 34px;
+      background-size: 100% 100%;
+
+      @media (min-width: $bp-small) {
+        background-size: auto;
+        @include oneline-sprite-box($icons, download);
+      }
+    }
+  }
+}

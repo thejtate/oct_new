@@ -1,0 +1,9 @@
+.site-header .header-bottom,
+.page-store-complete .title,
+.page-store-complete .site-header,
+.page-store-complete .site-footer .items .item,
+.page-store-complete .site-footer .logo,
+.page-store-complete .invoice .button{
+    display: none;
+}
+

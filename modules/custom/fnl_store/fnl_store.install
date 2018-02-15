@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Funnel store module.
+ */
+
+//hook_requirements
+
+/**
+ * Implements hook_schema().
+ */
+function fnl_store_schema() {
+  $schema = array();
+
+
+  $schema['fnl_store_orders'] = array(
+    'description' => 'Store orders',
+
+    'fields' => array(
+      'oid' => array(
+        'description' => 'Order id.',
+        'type' => 'serial',
+        'size' => 'normal',
+        'not null' => TRUE,
+      ),
+      'cart_created' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order created',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'created' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order created, status changed from Cart to any other',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'changed' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order changed date',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'total_qty' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Total quantity of all products',
+      ),
+      'subtotal_amount' => array(
+        'type' => 'float',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Order sub total amount. (Clean amount of all products)',
+      ),
+      'amount' => array(
+        'type' => 'float',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Order total amount. (Final amount with all modifiers(discounts, fee, etc.))',
+      ),
+      'user_id' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'A user-specific cart ID. For authenticated users, their {users}.uid. For anonymous users, a token.',
+      ),
+      'status' => array(
+        'description' => 'Order status.',
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'partial_payment_enabled' => array(
+        'description' => 'Is partial payment available?',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ),
+      'test_mode' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Is order processed in test mode?',
+      ),
+      'data' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of extra data',
+      ),
+    ),
+    'primary key' => array('oid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Add new field to fnl_store_orders, to indicate partial payments
+ */
+function fnl_store_update_7000() {
+
+  $schema = fnl_store_schema();
+
+  db_add_field('fnl_store_orders', 'partial_payment_enabled', $schema['fnl_store_orders']['fields']['partial_payment_enabled']);
+}
+

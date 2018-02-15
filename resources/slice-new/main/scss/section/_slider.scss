@@ -1,0 +1,93 @@
+&.section-slider {
+  position: relative;
+  padding: 50px 0 30px;
+  background: image-url('bg/bg-slider.jpg') center;
+  @include background-size(cover);
+  overflow: hidden;
+
+  @media (min-width: $bp-small) {
+    padding: 75px 0;
+  }
+
+  @media (min-width: $bp-middle) {
+    padding: 85px 0;
+  }
+
+  .slick-slide {
+    background: image-url('bg/slide-bg.png');
+    display: inline-block;
+    width: 250px;
+    height: 160px;
+
+    @media (min-width: $bp-small) {
+      width: 400px;
+      height: 250px;
+    }
+
+    @media (min-width: $bp-middle) {
+      width: 759px;
+      height: 458px;
+    }
+
+    img {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      position: absolute;
+      max-width: 210px;
+      top: 21px;
+      left: 54%;
+      @include translate(-50%, 0);
+
+      @media (min-width: $bp-small) {
+        max-width: 330px;
+        top: 25px;
+        left: 52%;
+      }
+
+      @media (min-width: $bp-middle) {
+        max-width: 652px;
+        top: 31px;
+        left: 51%;
+      }
+    }
+  }
+
+  &:before {
+    @include pseudo-block($top: -35px, $left: 0);
+    width: 150px;
+    height: 391px;
+    background: image-url('bg/slide-el-1.png');
+    z-index: 1;
+    background-size: 100% 100%;
+
+    @media (min-width: $bp-middle) {
+      width: 167px;
+      height: 559px;
+      background-size: auto;
+    }
+  }
+
+  &:after {
+    @include pseudo-block($top: -35px, $right: 0);
+    width: 150px;
+    height: 391px;
+    background: image-url('bg/slide-el-2.png');
+    z-index: 1;
+    background-size: 100% 100%;
+
+    @media (min-width: $bp-middle) {
+      width: 167px;
+      height: 556px;
+      background-size: auto;
+    }
+  }
+
+  &:before,  &:after {
+    display: none;
+
+    @media (min-width: $bp-small) {
+      display: block;
+    }
+  }
+}

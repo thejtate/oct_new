@@ -1,0 +1,22 @@
+name = Funnel store
+description = Funnel store core module.
+package = Funnel
+core = 7.x
+version = 7.x-1.x
+
+configure = admin/settings/funnel-store
+
+files[] = views/fnl_store_cart.views.inc
+files[] = views/views_handler_field_fnl_store_datetime.inc
+files[] = views/views_handler_field_fnl_store_editable_status.inc
+files[] = views/views_handler_field_view_order_link.inc
+files[] = views/views_handler_filter_fnl_store_datetime.inc
+files[] = views/views_handler_filter_fnl_store_order_status.inc
+files[] = views/views_handler_area_order_total.inc
+files[] = views/views_handler_area_order_full_info_header.inc
+files[] = views/views_handler_field_fnl_store_amount.inc
+files[] = views/views_plugin_argument_validate_order.inc
+
+
+dependencies[] = date_views
+dependencies[] = elysia_cron

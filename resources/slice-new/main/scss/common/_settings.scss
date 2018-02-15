@@ -1,0 +1,36 @@
+$icons: sprite-map('icons/*.png', $spacing: 8px, $layout: 'smart');
+//$h-sprites: sprite-map('h-sprites/*.png',$layout: 'vertical', $spacing: 8px);
+//$v-sprites: sprite-map('v-sprites/*.png', $layout: 'horizontal', $spacing: 8px);
+
+$experimental-support-for-svg: true;
+$experimental-support-for-opera: false;
+
+
+//fonts
+$podkova-bold: podkova-bold;
+$podkova-regular: podkova-regular;
+$peralta-regular: peralta-regular;
+$bitter-italic: bitter-italic;
+
+
+//$colors
+$width-xsmall: 90%;
+
+$bp-small: 768px;
+$width-small: 730px;
+
+$bp-middle: 992px;
+$width-middle: 970px;
+
+$bp-large: 1300px;
+$width-large: 1100px;
+
+$dark-blue: #254176;
+$blue: #3d6092;
+$light-blue: #d3e3f6;
+
+$dark-orange: #cd7520;
+$orange: #f2b35e;
+$light-orange: #fbfeb5;
+
+$tan: #feebcc;

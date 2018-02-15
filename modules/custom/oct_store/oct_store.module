@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * OCT store common customization.
+ */
+
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_theme($existing, $type, $theme, $path) {
+  $module_path = drupal_get_path('module', 'oct_store');
+  return array(
+    'fnl_store_checkout_form' => array(
+      'arguments' => array('form' => NULL),
+      'template' => 'fnl-store-checkout-form',
+      'render element' => 'form',
+      'path' => $module_path . '/templates',
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function oct_store_form_alter(&$form, &$form_state, $form_id) {
+
+  switch ($form_id) {
+    case 'fnl_store_checkout_form':
+      $form['#attributes']['class'][] = 'oct-checkout-form';
+      $form['user']['purchaser']['#access'] = FALSE;
+      $form['user']['second_first_name']['#access'] = FALSE;
+      $form['user']['second_last_name']['#access'] = FALSE;
+      $form['payment']['#access'] = FALSE;
+      $form['cancel']['#access'] = FALSE;
+
+      $form['user']['first_name']['#title'] = t('First Name');
+      $form['user']['last_name']['#title'] = t('Last Name');
+      $form['user']['phone']['#title'] = t('Phone');
+      $form['user']['email_confirm']['#title'] = t('Confirm Email');
+      $form['submit']['#value'] = t('Complete Order');
+      if (isset($form['discount'])) {
+        $form['discount']['discount_code']['#title'] = $form['discount']['#title'];
+        $form['discount']['#title'] = '';
+        $form['discount']['discount_submit']['#prefix'] = '<div class="btn-wrap style-a"><div class="function-actions">';
+        $form['discount']['discount_submit']['#suffix'] = '</div></div>';
+      }
+      break;
+  }
+
+}
+

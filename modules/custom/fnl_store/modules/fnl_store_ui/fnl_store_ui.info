@@ -1,0 +1,9 @@
+name = Funnel store ui
+description = Administrative store menu items and views
+package = Funnel
+core = 7.x
+version = 7.x-1.x
+
+dependencies[] = fnl_store
+dependencies[] = fnl_store_cart
+dependencies[] = fnl_store_payment

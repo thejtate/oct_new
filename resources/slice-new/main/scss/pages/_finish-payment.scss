@@ -1,0 +1,51 @@
+&.page-finish-payment {
+
+  table {
+    width: 100%;
+  }
+
+  fieldset {
+    border: none;
+    padding: 0;
+  }
+
+  .table-price {
+    margin-bottom: 30px;
+  }
+
+  .form-wrapper {
+    margin-bottom: 30px;
+
+    legend {
+      margin-bottom: 30px;
+
+      a {
+        color: #3b5f94;
+        font-size: 20px;
+        font-family: $podkova-bold;
+        text-decoration: none;
+        @include transition(color .3s);
+
+        &:hover {
+          color: #6b95d4;
+        }
+      }
+    }
+  }
+
+  .form-item-amount {
+
+    label, .form-text {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .form-text {
+      max-width: 200px;
+
+      &:disabled {
+        opacity: 0.6;
+      }
+    }
+  }
+}

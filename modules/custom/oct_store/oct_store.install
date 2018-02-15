@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Oct store discounts module.
+ */
+
+/**
+ * Implements hook_update().
+ */
+function oct_store_update_7000() {
+  // Get the weight of the oct_store_discounts module
+  $weight = db_select('system', 's')
+    ->fields('s', array('weight'))
+    ->condition('name', 'oct_store_discounts', '=')
+    ->execute()
+    ->fetchField();
+
+  // Set our module to a weight 1 heavier
+  if ($weight) {
+    db_update('system')
+      ->fields(array('weight' => $weight + 1))
+      ->condition('name', 'oct_store', '=')
+      ->execute();
+  }
+
+}

@@ -1,0 +1,90 @@
+&.page-ffn {
+
+  .content-wrapper {
+    padding-top: 0;
+  }
+
+  .content-top {
+    position: relative;
+    @include clearfix();
+    padding: 30px 0;
+    margin-bottom: 40px;
+
+    &:before {
+      @include pseudo-block($top: 0, $bottom: 0, $left: 50%);
+      width: 100vw;
+      background: #f7c757;
+      @include transform(translateX(-50%));
+      z-index: -1;
+
+    }
+
+    .img {
+      float: right;
+      margin-left: 50px;
+    }
+
+    .text {
+      overflow: hidden;
+      padding-top: 20px;
+    }
+  }
+
+  .item {
+    padding: 25px 0;
+    @include clearfix();
+    position: relative;
+    margin-bottom: 40px;
+
+    &:last-child {
+      margin-bottom: 0;
+
+      &:before {
+        display: none;
+      }
+    }
+
+    &:before {
+      @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+      height: 5px;
+      background: image-url('bg/dott-post.png');
+    }
+
+    .desc-bottom {
+      background: #f5c658;
+      padding: 5px 12px;
+      @include clearfix();
+
+      & > span {
+        margin: 4px 15px 0 0;
+        display: inline-block;
+      }
+
+      .btn-wrap {
+        float: right;
+      }
+    }
+
+    h4 {
+      margin: 0 0 10px;
+      color: #3b5f94;
+      font-size: 31px;
+      font-family: $peralta-regular;
+    }
+
+    h5 {
+      color: #cf760f;
+      font-size: 28px;
+      margin: 0 0 10px;
+    }
+
+    .img {
+      float: left;
+      margin-right: 35px;
+    }
+
+    .desc {
+      overflow: hidden;
+    }
+  }
+}

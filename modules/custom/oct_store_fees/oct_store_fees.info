@@ -1,0 +1,14 @@
+name = OCT store fees
+description = OCT store fees
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+;files[] =
+
+dependencies[] = 'fnl_store'
+dependencies[] = 'fnl_store_cart'
+
+files[] = views/oct_store_fees.views.inc
+files[] = views/views_handler_field_oct_store_fees_rendered.inc
+files[] = views/views_handler_field_oct_store_serial_field.inc

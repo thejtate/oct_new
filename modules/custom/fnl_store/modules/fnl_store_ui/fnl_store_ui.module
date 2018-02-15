@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Administrative store menu items and views
+ */
+ 
+/**
+ * Implements hook_permission().
+ */
+function fnl_store_ui_permission() {
+
+  $return = array();
+
+  return $return;
+}
+

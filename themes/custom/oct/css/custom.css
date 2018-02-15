@@ -1,0 +1,169 @@
+/* tabs */
+.page .content-wrapper .site-container .tabs.primary {
+    border: none;
+    margin: 0 0 0 15px;
+    padding: 0px;
+}
+
+.page .content-wrapper .site-container .tabs.primary li a {
+    border: 2px solid #FAC150;
+    background-color: #EB9823;
+    display: inline-block;
+    color: #fcea79;
+    font-size: 16px;
+    font-weight: normal;
+    font-family: sans-serif;
+    padding-top: 3px;
+}
+
+.page .content-wrapper .site-container .tabs.primary li a.active {
+    color: #ffffff;
+}
+
+.page .content-wrapper .site-container .tabs.primary li a:hover{
+    color: #9dc1f2;
+}
+
+/* END tabs */
+
+/* social block */
+#block-oct-custom-oct-custom-social-block .paypal-donate-form {
+    display: none;
+}
+
+#block-oct-custom-oct-custom-social-block .item-list ul li {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+/* END social block */
+
+/* make a donation block */
+.make-donation-wrapper .make-donation-code .paypal-donate-form {
+    display: none;
+}
+
+/* END make a donation block */
+
+/* user register */
+#user-register-form .reload-captcha-wrapper .funnel-reload-captcha {
+    color: #C9C579;
+}
+
+#user-register-form .reload-captcha-wrapper {
+    float: right;
+    margin-right: 95px;
+    margin-top: 47px;
+}
+
+#user-register-form .password-suggestions {
+    border-color: #C9C579;
+    color: #368099;
+}
+
+#user-register-form .password-strength {
+    margin-right: 50px;
+    color: #D0CC80;
+}
+
+#user-register-form .password-strength .password-strength-text {
+    color: #ED9200;
+}
+
+.page.page-user .outer-wrapper .site-container .content-wrapper .form .form-type-textfield .description,
+.page.page-user .outer-wrapper .site-container .content-wrapper .form .form-type-password .description {
+    margin-top: 2px;
+}
+
+.page-user #messages {
+    width: 280px;
+    margin-top: -50px;
+}
+
+/* user register */
+
+/* message page */
+.node-message-form .grippie {
+    display: none;
+}
+
+.node-message-form .submit-wrapper .ajax-progress.ajax-progress-throbber {
+    position: absolute;
+    margin-top: -26px;
+    margin-left: 6px;
+    background-color: #FAB300;
+}
+
+.node-message-form .submit-wrapper .ajax-progress.ajax-progress-throbber .message {
+    color: #a93b43;
+    font-size: 9px;
+    margin-top: 7px;
+}
+
+.page.page-message-board .message-wrapper .item-messages .rating-messages .vud-widget-star .vote-star {
+    font-size: 0px;
+    margin: 0 10px;
+}
+
+.page-message-board .messages {
+    width: 635px;
+    margin-left: 18px;
+}
+
+.page-message-board #block-afb-1 .messages {
+    position: absolute;
+    margin-top: -37px;
+    width: 536px;
+    margin-left: 5px;
+}
+
+.page-message-board #block-oct-custom-oct-custom-subscribe-block {
+    margin-left: 40px;
+}
+
+/* END message page*/
+
+/* suggestion box */
+#node-39 .messages {
+    width: 203px;
+    position: absolute;
+    margin-top: -80px;
+    margin-left: 64px;
+}
+
+#node-39 textarea.required.error {
+    border: 2px solid red;
+}
+
+/* END suggestion box */
+
+/* suggestion box */
+.page-camps .node-camps-list .sticky-header {
+    display: none;
+}
+
+/* END suggestion box */
+
+
+
+/* FTB form */
+.node-fairy-tale-ball-form .ftb-form-row .ftb-form-item label{
+    padding-left: 0px;
+}
+
+.node-fairy-tale-ball-form .ftb-form-description{
+    display: none;
+}
+
+/* END FTB form */
+
+/*STORE*/
+.page.page-store-camps .content-inner .content .custom-inline-select label {
+    display: inline-block;
+    width: 110px;
+}
+.page.page-cart .content-inner .store-table,
+.page.page-store-checkout .content-inner .content .store-table{
+    width: 100%;
+}
+/*END STORE*/

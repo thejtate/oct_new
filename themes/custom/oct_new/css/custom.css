@@ -1,0 +1,288 @@
+table.products-table td.child span.empty {
+  cursor: pointer;
+  display: none;
+}
+
+table.products-table td.child.disabled span.empty {
+  display: block;
+}
+
+table.products-table td.child.disabled .form-item {
+  display: none;
+}
+
+/* Cart page */
+.page-cart table.store-table tr.out-of-stock {
+  background: #ed541d !important;
+}
+
+/* END Cart page */
+
+/* Homepage eNewsletter */
+.section.section-items .item .text.form-text {
+  padding: 7px 5px;
+}
+
+ul.primary li a {
+  color: darkgray;
+}
+
+ul.primary li a {
+  color: black;
+}
+
+/* Checkout */
+.page-checkout #oct-store-discounts-cart-wrapper #edit-cart > legend,
+.page-checkout #oct-store-discounts-cart-wrapper #edit-cart .view-display-id-checkout .store-table {
+  display: none;
+}
+
+.page.page-checkout .inner-wrapper .form-checkout .text:before {
+  display: none;
+}
+
+.page.page-checkout .inner-wrapper .form-checkout .text {
+  font-size: 19px;
+  position: static;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.page.page-checkout #edit-cart {
+  margin-bottom: 0;
+}
+
+/* Menu social right */
+.b-social ul li {
+  margin: 0 0 48px 0;
+}
+
+.page .inner-wrapper > .messages {
+  margin-top: 25px;
+}
+
+.page-tickets .webform-component-select {
+  position: relative;
+}
+
+.page-tickets .ajax-progress .throbber {
+  background: none;
+}
+
+.page-store-complete .content-wrapper h3.complete-head {
+  text-align: center;
+  color: #3b5f94;
+  font-family: peralta-regular;
+}
+
+.page.page-store-complete .content-wrapper > .region-content {
+  width: 100%;
+  float: none;
+}
+
+.page.page-store-complete .store-table,
+.page.page-store-complete .table-price {
+  width: 68%;
+  margin: 0 auto;
+}
+
+.page-store-complete.page.page-cart .content-wrapper tr td {
+  padding: 2px 1px;
+  line-height: inherit;
+}
+.page-store-complete .invoice .btn-wrap {
+  text-align: center;
+  padding-top: 20px;
+}
+.page-store-complete table a {
+  border-bottom: none;
+}
+
+.page-store-complete .invoice {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Productions */
+.page.page-shows .content-wrapper .item .file-download .file-icon {
+  display: none;
+}
+
+.page.page-shows .content-wrapper .item .file-download {
+  margin-top: 30px;
+}
+.page-store-checkout form.oct-checkout-form label{
+  font-family: podkova-bold;
+}
+
+.page .btn-wrap.with-arrow.custom-btn {
+  display: table;
+  margin: 0 auto
+}
+
+/* Summer Camp Registration */
+.page-camp-enrollment .t-shirt-information {
+  padding: 20px 0 10px;
+}
+
+
+/* Animation for Timeline */
+.el-with-animation {
+  -moz-transition: opacity 1s, -moz-transform 1s;
+  -o-transition: opacity 1s, -o-transform 1s;
+  -webkit-transition: opacity 1s, -webkit-transform 1s;
+  transition: opacity 1s, transform 1s;
+}
+.el-with-animation.animate-opacity {
+  opacity: 0;
+}
+.el-with-animation.animate-up-to-down {
+  -moz-transform: translate(0, -100px);
+  -ms-transform: translate(0, -100px);
+  -webkit-transform: translate(0, -100px);
+  transform: translate(0, -100px);
+}
+.el-with-animation.animate-up-to-down.animate-zoom-in {
+  -moz-transform: translate(0, -100px) scale(0.7);
+  -ms-transform: translate(0, -100px) scale(0.7);
+  -webkit-transform: translate(0, -100px) scale(0.7);
+  transform: translate(0, -100px) scale(0.7);
+}
+.el-with-animation.animate-up-to-down.animate-zoom-out {
+  -moz-transform: translate(0, -100px) scale(1.25);
+  -ms-transform: translate(0, -100px) scale(1.25);
+  -webkit-transform: translate(0, -100px) scale(1.25);
+  transform: translate(0, -100px) scale(1.25);
+}
+.el-with-animation.animate-down-to-up {
+  -moz-transform: translate(0, 100px);
+  -ms-transform: translate(0, 100px);
+  -webkit-transform: translate(0, 100px);
+  transform: translate(0, 100px);
+}
+.el-with-animation.animate-down-to-up.animate-zoom-in {
+  -moz-transform: translate(0, 100px) scale(0.7);
+  -ms-transform: translate(0, 100px) scale(0.7);
+  -webkit-transform: translate(0, 100px) scale(0.7);
+  transform: translate(0, 100px) scale(0.7);
+}
+.el-with-animation.animate-down-to-up.animate-zoom-out {
+  -moz-transform: translate(0, 100px) scale(1.25);
+  -ms-transform: translate(0, 100px) scale(1.25);
+  -webkit-transform: translate(0, 100px) scale(1.25);
+  transform: translate(0, 100px) scale(1.25);
+}
+.el-with-animation.animate-right-to-left {
+  -moz-transform: translate(30px, 0);
+  -ms-transform: translate(30px, 0);
+  -webkit-transform: translate(30px, 0);
+  transform: translate(30px, 0);
+}
+.el-with-animation.animate-right-to-left.animate-zoom-in {
+  -moz-transform: translate(30px, 0) scale(0.7);
+  -ms-transform: translate(30px, 0) scale(0.7);
+  -webkit-transform: translate(30px, 0) scale(0.7);
+  transform: translate(30px, 0) scale(0.7);
+}
+.el-with-animation.animate-right-to-left.animate-zoom-out {
+  -moz-transform: translate(30px, 0) scale(1.25);
+  -ms-transform: translate(30px, 0) scale(1.25);
+  -webkit-transform: translate(30px, 0) scale(1.25);
+  transform: translate(30px, 0) scale(1.25);
+}
+.el-with-animation.animate-left-to-right {
+  -moz-transform: translate(-30px, 0);
+  -ms-transform: translate(-30px, 0);
+  -webkit-transform: translate(-30px, 0);
+  transform: translate(-30px, 0);
+}
+.el-with-animation.animate-left-to-right.animate-zoom-in {
+  -moz-transform: translate(-30px, 0) scale(0.7);
+  -ms-transform: translate(-30px, 0) scale(0.7);
+  -webkit-transform: translate(-30px, 0) scale(0.7);
+  transform: translate(-30px, 0) scale(0.7);
+}
+.el-with-animation.animate-left-to-right.animate-zoom-out {
+  -moz-transform: translate(-30px, 0) scale(1.25);
+  -ms-transform: translate(-30px, 0) scale(1.25);
+  -webkit-transform: translate(-30px, 0) scale(1.25);
+  transform: translate(-30px, 0) scale(1.25);
+}
+.el-with-animation.animate-zoom-in {
+  -moz-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  -webkit-transform: scale(0.7);
+  transform: scale(0.7);
+}
+.el-with-animation.animate-zoom-out {
+  -moz-transform: scale(1.25);
+  -ms-transform: scale(1.25);
+  -webkit-transform: scale(1.25);
+  transform: scale(1.25);
+}
+.el-with-animation.animating-end.animate-opacity {
+  opacity: 1;
+}
+.el-with-animation.animating-end.animate-up-to-down, .el-with-animation.animating-end.animate-down-to-up, .el-with-animation.animating-end.animate-right-to-left, .el-with-animation.animating-end.animate-left-to-right {
+  -moz-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  -webkit-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+.el-with-animation.animating-end.animate-up-to-down.animate-zoom-in, .el-with-animation.animating-end.animate-up-to-down.animate-zoom-out, .el-with-animation.animating-end.animate-down-to-up.animate-zoom-in, .el-with-animation.animating-end.animate-down-to-up.animate-zoom-out, .el-with-animation.animating-end.animate-right-to-left.animate-zoom-in, .el-with-animation.animating-end.animate-right-to-left.animate-zoom-out, .el-with-animation.animating-end.animate-left-to-right.animate-zoom-in, .el-with-animation.animating-end.animate-left-to-right.animate-zoom-out {
+  -moz-transform: translate(0, 0) scale(1);
+  -ms-transform: translate(0, 0) scale(1);
+  -webkit-transform: translate(0, 0) scale(1);
+  transform: translate(0, 0) scale(1);
+}
+.el-with-animation.animating-end.animate-zoom-in, .el-with-animation.animating-end.animate-zoom-out {
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+/* Camps Landing */
+.page.page-camps .b-navigarion .menu {
+  text-align: center;
+}
+
+.page.page-camps .desc p {
+  margin: 0;
+}
+
+.page.page-camps .table-camps .even {
+  background: #f1c05a;
+}
+
+.page.page-camps .table-camps .field_cli_dates_camp p,
+.page.page-classes .table-camps .field_cli_dates_camp p {
+  margin: 0;
+}
+
+.page.page-classes .desc {
+  background: #3e6093;
+  color: #fbce6c;
+  margin-bottom: 38px;
+}
+
+.page.page-classes .desc p {
+  margin: 0;
+}
+
+.page.page-classes .desc a {
+  color: #fbce6c;
+}
+
+.page.page-classes .field_cli_description p:first-child,
+.page.page-camps .field_cli_description p:first-child {
+  margin-top: 0;
+}
+
+/*.page-user.logged-in .content-wrapper div.tabs {*/
+  /*top: 418px;*/
+/*}*/
+
+ul.partial-pay-not-available {
+  margin: 8px 0;
+}

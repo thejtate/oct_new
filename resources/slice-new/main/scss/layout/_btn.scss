@@ -1,0 +1,188 @@
+.btn-wrap {
+  padding-left: 4px;
+  position: relative;
+
+  &.not-alone {
+
+    .form-actions {
+      margin-right: 20px;
+      margin-bottom: 10px;
+
+      @media (min-width: $bp-middle) {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .form-actions {
+    margin: 0 0 4px;
+  }
+
+  .form-actions {
+    display: inline-block;
+    position: relative;
+    @include transition(all .3s);
+
+    &:hover {
+      opacity: .7;
+    }
+
+    &:before {
+      @include pseudo-block($top: 0, $left: -4px);
+      border-top: 4px solid transparent;
+      border-bottom: 0 solid transparent;
+      border-right: 4px solid #c8640d;
+    }
+
+    &:after {
+      @include pseudo-block($right: 0, $bottom: -4px);
+      border-top: 0 solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 4px solid #c8640d;
+    }
+  }
+
+  &.style-a {
+
+    a {
+      text-decoration: none;
+      display: block;
+      position: relative;
+    }
+
+    .form-submit, a {
+      font-family: $podkova-bold;
+      font-size: 15px;
+      background: #eb9823;
+      padding: 4px 15px;
+      color: #ffd773;
+      border: none;
+      box-shadow: -4px 4px 0 0 #c8640d;
+      border-radius: 0;
+      text-shadow: -0.7px 0.7px 0 #c70;
+
+      @media (min-width: $bp-small) {
+        font-size: 20px;
+        padding: 6px 20px;
+        text-shadow: -3px 2px 0 #cc7700;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 23px;
+      }
+    }
+  }
+
+  &.style-c {
+
+    a {
+      display: block;
+      text-decoration: none;
+    }
+
+    .form-submit, a {
+      font-family: $podkova-bold;
+      font-size: 18px;
+      background: #eb9823;
+      padding: 6px 20px;
+      color: #ffd773;
+      border: none;
+      box-shadow: -4px 4px 0 0 #c8640d;
+      text-transform: uppercase;
+      text-shadow: -0.7px 0.7px 0 #c70;
+
+      @media (min-width: $bp-small) {
+        text-shadow: -3px 2px 0 #cc7700;
+        font-size: 20px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 23px;
+      }
+    }
+  }
+
+  &.style-d {
+    padding: 0;
+
+    a {
+      display: block;
+      font-size: 18px;
+      padding: 11px;
+      background: #3e6093;
+      color: #ffd773;
+      text-decoration: none;
+      @include transition(all .3s);
+
+      @media (min-width: $bp-small) {
+        font-size: 20px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 23px;
+      }
+
+      &:hover {
+        background: #4e79ba;
+      }
+    }
+  }
+
+  &.with-arrow {
+    display: inline-block;
+
+    &:before {
+      @include pseudo-block($top: 46%, $right: 20px);
+      @include oneline-sprite-box($icons, arrow-btn);
+      @include transform(translateY(-50%));
+      @include transition(all .3s);
+      //z-index: 10;
+      z-index: 1;
+    }
+
+    &:hover:before {
+      right: 15px;
+    }
+
+    .form-submit, a {
+      padding-right: 50px;
+    }
+  }
+}
+
+.btn-top {
+  position: fixed;
+  right: 0;
+  bottom: 10%;
+  opacity: 0;
+  visibility: hidden;
+  @include transition(all .3s);
+  z-index: 1;
+
+  &:hover {
+    opacity: .7 !important;
+  }
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  a {
+    display: block;
+    @include text-hide();
+    @include oneline-sprite-box($icons, top);
+  }
+}
+
+table .rteleft .btn-wrap.style-a a {
+  font-size: 11px;
+
+  @media (min-width: $bp-small) {
+    font-size: 20px;
+  }
+
+  @media (min-width: $bp-middle) {
+    font-size: 23px;
+  }
+}

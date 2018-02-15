@@ -1,0 +1,13 @@
+name = OCT store camps and classes
+description = OCT store camps and classes.
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+files[] = views/oct_store_cc.views.inc
+files[] = views/views_handler_field_oct_store_cc_rendered_camp_class_product.inc
+files[] = includes/oct_store_cc.camps_form.inc
+
+dependencies[] = fnl_store
+dependencies[] = fnl_store_cart
+dependencies[] = html5_tools

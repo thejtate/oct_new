@@ -1,0 +1,517 @@
+<?php
+
+/**
+ * @file
+ * Funnel store PayPal payment provider.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function fnl_store_paypal_menu() {
+  $items = array();
+
+  $items['store/paypal-payment/ipn'] = array(
+    'title' => 'ipn',
+    'page callback' => 'fnl_store_paypal_ipn',
+    'access callback' => TRUE,
+    'page arguments' => array(),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['store/paypal-payment/cancel/%fnl_store_order'] = array(
+    'title' => 'ipn',
+    'page callback' => 'fnl_store_paypal_cancel',
+    'access callback' => 'fnl_store_paypal_order_payment_access',
+    'access arguments' => array(3),
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['store/paypal-payment/redirect/%fnl_store_order'] = array(
+    'title' => 'Redirect to PayPal',
+    'page callback' => 'drupal_get_form',
+    'access callback' => 'fnl_store_paypal_order_payment_access',
+    'access arguments' => array(3),
+    'page arguments' => array('fnl_store_paypal_redirect_form', 3),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_fnl_store_payment_providers.
+ */
+function fnl_store_paypal_fnl_store_payment_providers() {
+  return array(
+    'paypal' => array(
+      'title' => 'PayPal',
+      'checkout_description' => 'PayPal - pay without sharing your financial information.',
+      //callbacks
+      'settings_form_callback' => 'fnl_store_paypal_settings_form', // arguments ($form_full, &$form_state)
+      'payment_callback' => 'fnl_store_paypal_pay', // arguments (&$order)
+    )
+  );
+}
+
+
+function fnl_store_paypal_order_payment_access($order) {
+  $user_id = fnl_store_cart_user_id();
+  $accessible = ($user_id == $order->user_id) && $order->status == FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS;
+
+  if(!$accessible) {
+    drupal_set_message('Invalid order data', 'warning');
+  }
+
+  return $accessible;
+}
+
+/**
+ *
+ *
+ * @param $form
+ * @param $form_state
+ * @param $order
+ * @return mixed
+ */
+function fnl_store_paypal_redirect_form($form, &$form_state, $order) {
+
+  $config = fnl_store_paypal_config();
+
+  $form['description'] = array(
+    '#markup' => '<p>' . t('Please wait while you are redirected to the payment server. If nothing happens within 10 seconds, please click on the button below.') . '</p>',
+  );
+
+  $values = fnl_store_paypal_payment_values($order);
+
+  foreach ($values as $name => $value) {
+    if (!empty($value)) {
+      $form[$name] = array('#type' => 'hidden', '#value' => $value);
+    }
+  }
+
+  $form['#action'] = $config['url'];
+
+  $form['js'] = array(
+    '#type' => 'markup',
+    '#markup' => '<script type="text/javascript">document.getElementById(\'fnl-store-paypal-redirect-form\').submit();</script>',
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Proceed to PayPal'),
+  );
+
+  return $form;
+}
+
+function fnl_store_paypal_payment_values($order) {
+  $config = fnl_store_paypal_config();
+
+  $values = array(
+    // Specify the checkout experience to present to the user.
+    'cmd' => '_cart',
+
+    // Signify we're passing in a shopping cart from our system.
+    'upload' => 1,
+
+    // The store's PayPal e-mail address
+    'business' => $config['email'],
+
+    // The path PayPal should send the IPN to
+    'notify_url' => $config['ipn_url'],
+
+    // The application generating the API request
+    'bn' => 'Funnel store paypal module',
+
+    // Set the correct character set
+    'charset' => 'utf-8',
+
+    // Do not display a comments prompt at PayPal
+    'no_note' => 1,
+
+    // Do not display a shipping address prompt at PayPal
+    'no_shipping' => 1,
+
+    // Return to the review page when payment is canceled
+    'cancel_return' => $config['cancel_url'] . '/' . $order->oid,
+
+    // Return to the payment redirect page for processing successful payments
+    'return' => url('store/complete/' . $order->oid, array('absolute' => TRUE)),
+
+    // Return to this site with payment data in the POST
+    'rm' => 2,
+
+    // The type of payment action PayPal should take with this order. 'sale' or 'authorize'
+    'paymentaction' => $config['action'],
+
+    // Set the currency and language codes
+    'currency_code' => $config['currency'],
+    'lc' => $config['language'],
+
+    // Use the timestamp to generate a unique invoice number
+    'invoice' => fnl_store_paypal_ipn_invoice($order),
+
+    // Define a single item in the cart representing the whole order
+    'amount_1' => fnl_store_payment_get_transaction_amount($order),
+    'item_name_1' => t('Order #@order_number at !store', array('@order_number' => $order->oid, '!store' => variable_get('site_name', url('<front>', array('absolute' => TRUE))))),
+    'on0_1' => t('Product count'),
+    'os0_1' => $order->total_qty,
+  );
+
+  return $values;
+}
+
+function fnl_store_paypal_ipn_invoice($order) {
+  return $order->oid . '-' . REQUEST_TIME;
+}
+
+
+/**
+ * Current module settings for extending fnl_store_payment_settings_form
+ */
+function fnl_store_paypal_settings_form($form_full, &$form_state) {
+  $form = array();
+
+  $form['fnl_store_paypal_mode'] = array(
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('Mode'),
+    '#default_value' => variable_get('fnl_store_paypal_mode', 'sandbox'),
+    '#options' => array('live' => t('Live'), 'sandbox' => t('Sandbox')),
+  );
+
+  $form['live'] = array(
+    '#type' => 'fieldset',
+    '#tree' => FALSE,
+    '#title' => t('Live settings'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#states' => array('visible' => array(':input[name$="fnl_store_paypal_mode"]' => array('value' => 'live'),))
+  );
+
+  $form['live']['fnl_store_paypal_user_email'] = array(
+    '#type' => 'textfield',
+    '#required' => FALSE,
+    '#title' => t('PayPal User Email'),
+    '#default_value' => variable_get('fnl_store_paypal_user_email', ''),
+  );
+
+  $form['sandbox'] = array(
+    '#type' => 'fieldset',
+    '#tree' => FALSE,
+    '#title' => t('Sandbox settings'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#states' => array('visible' => array(':input[name$="fnl_store_paypal_mode"]' => array('value' => 'sandbox'),))
+  );
+
+  $form['sandbox']['fnl_store_paypal_user_name_email'] = array(
+    '#type' => 'textfield',
+    '#required' => FALSE,
+    '#title' => t('PayPal User Email'),
+    '#default_value' => variable_get('fnl_store_paypal_user_email_test', 'eldimateus-facilitator-us@gmail.com'),
+  );
+
+  return $form;
+}
+
+/**
+ * Paypal config
+ *
+ * @return array
+ */
+function fnl_store_paypal_config() {
+
+  $base_settings = array(
+    'ipn_url' => url('store/paypal-payment/ipn', array('absolute' => TRUE)),
+    'cancel_url' => url('store/paypal-payment/cancel', array('absolute' => TRUE)),
+    'currency' => variable_get('fnl_store_currency', 'USD'),
+    'language' => 'US',
+    'action' => 'sale',
+  );
+
+  if(variable_get('fnl_store_paypal_mode', 'sandbox') == 'sandbox') {
+    return $base_settings + array(
+      'mode' => 'sandbox',
+      'email' => variable_get('fnl_store_paypal_user_email_test', 'eldimateus-facilitator-us@gmail.com'),
+      'url' => 'https://www.sandbox.paypal.com/cgi-bin/webscr',
+    );
+  } else {
+    return $base_settings + array(
+      'mode' => 'live',
+      'email' => variable_get('fnl_store_paypal_user_email', ''),
+      'url' => 'https://www.paypal.com/cgi-bin/webscr',
+    );
+  }
+}
+
+/**
+ * Menu callback. Process PayPal IPN response.
+ */
+function fnl_store_paypal_ipn() {
+  
+  $config = fnl_store_paypal_config();
+  
+  watchdog('fnl_store_paypal_ipn', '<pre>' . print_r($_POST, TRUE) . '</pre>');
+
+  $ipn = $_POST;
+
+  // Exit now if the $_POST was empty.
+  if (empty($ipn)) {
+    watchdog('fnl_store_paypal', 'IPN URL accessed with no POST data submitted.', array(), WATCHDOG_WARNING);
+    return FALSE;
+  }
+
+  // Prepare an array to POST back to PayPal to validate the IPN.
+  $variables = array('cmd=_notify-validate');
+
+  foreach ($ipn as $key => $value) {
+    $variables[] = $key . '=' . urlencode($value);
+  }
+
+  // Determine the proper PayPal server to POST to.
+  if (!empty($ipn['test_ipn']) && $ipn['test_ipn'] == 1) {
+    $host = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+  }
+  else {
+    $host = 'https://www.paypal.com/cgi-bin/webscr';
+  }
+
+  $request_options = array('method' => 'POST', 'data' => implode('&', $variables));
+
+  if(variable_get('drupal_http_request_function', FALSE) == 'chr_curl_http_request') {
+    $request_options['curl_opts'] = array(CURLOPT_SSLVERSION => 6);
+  }
+
+  // Process the HTTP request to validate the IPN.
+  $response = drupal_http_request($host, $request_options);
+
+  // If an error occurred during processing, log the message and exit.
+  if (property_exists($response, 'error')) {
+    watchdog('fnl_store_paypal', 'Attempt to validate IPN failed with error @code: @error', array('@code' => $response->code, '@error' => $response->error), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  // If the IPN was invalid, log a message and exit.
+  if ($response->data == 'INVALID') {
+    watchdog('fnl_store_paypal', 'Invalid IPN received and ignored.', array(), WATCHDOG_ALERT);
+    return FALSE;
+  }
+
+  // Exit if the IPN has already been processed.
+  if (!empty($ipn['txn_id']) && $prior_ipn = fnl_store_paypal_ipn_load($ipn['txn_id'])) {
+    if ($prior_ipn['payment_status'] == $ipn['payment_status']) {
+      watchdog('fnl_store_paypal', 'Attempted to process an IPN that has already been processed with transaction ID @txn_id.', array('@txn_id' => $ipn['txn_id']), WATCHDOG_NOTICE);
+      return FALSE;
+    }
+  }
+
+  // Load the order based on the IPN's invoice number.
+  if (!empty($ipn['invoice']) && strpos($ipn['invoice'], '-') !== FALSE) {
+    list($ipn['order_id'], $timestamp) = explode('-', $ipn['invoice']);
+  }
+  elseif (!empty($ipn['invoice'])) {
+    $ipn['order_id'] = $ipn['invoice'];
+  }
+  else {
+    $ipn['order_id'] = 0;
+    $timestamp = 0;
+  }
+
+  if (!empty($ipn['order_id'])) {
+    $order = fnl_store_order_load($ipn['order_id']);
+  }
+  else {
+    $order = FALSE;
+  }
+
+  watchdog('fnl_store_paypal_ipn_order', '<pre>' . print_r($order, true) . '</pre>');
+
+  if (trim(strtolower($ipn['receiver_email'])) !== trim(strtolower($config['email']))) {
+    watchdog('fnl_store_paypal_wps', 'IPN rejected: invalid receiver e-mail specified (@receiver_email); must match the primary e-mail address on the PayPal account.', array('@receiver_email' => $ipn['receiver_email']), WATCHDOG_NOTICE);
+    return FALSE;
+  }
+
+  if(fnl_store_paypal_ipn_process($order, $ipn) !== FALSE) {
+    fnl_store_paypal_ipn_save($ipn);
+  }
+
+}
+
+function fnl_store_paypal_ipn_process($order, &$ipn) {
+  // Do not perform any processing on WPS transactions here that do not have
+  // transaction IDs, indicating they are non-payment IPNs such as those used
+  // for subscription signup requests.
+  if (empty($ipn['txn_id'])) {
+    watchdog('fnl_store_paypal', 'Attempted to process an IPN without transaction ID.', array(), WATCHDOG_NOTICE);
+    return FALSE;
+  }
+
+  // Exit when we don't get a payment status we recognize.
+  if (!in_array($ipn['payment_status'], array('Failed', 'Voided', 'Pending', 'Completed', 'Refunded'))) {
+    watchdog('fnl_store_paypal', 'Attempted to process an IPN with unknown status @status.', array('@status' => $ipn['payment_status']), WATCHDOG_NOTICE);
+    return FALSE;
+  }
+
+  // If this is a prior authorization capture IPN for which we've already
+  // created a transaction...
+  if (in_array($ipn['payment_status'], array('Voided', 'Completed')) &&
+    !empty($ipn['auth_id']) && $auth_ipn = fnl_store_paypal_ipn_load($ipn['auth_id'])) {
+    // Load the prior IPN's transaction and update that with the capture values.
+    $transaction = fnl_store_payment_transaction_load($auth_ipn['transaction_id']);
+  }
+  else {
+    // Create a new payment transaction for the order.
+    $transaction = new stdClass();
+    $transaction->oid = $order->oid;
+    $transaction->payment_provider = 'paypal';
+  }
+
+  $transaction->remote_id = $ipn['txn_id'];
+  $transaction->amount = $ipn['mc_gross'];
+  $transaction->currency_code = $ipn['mc_currency'];
+  $transaction->payload[REQUEST_TIME . '-ipn'] = $ipn;
+  $transaction->test_mode = !empty($ipn['test_ipn']);
+
+  // Set the transaction's statuses based on the IPN's payment_status.
+  $transaction->remote_status = $ipn['payment_status'];
+
+  // If we didn't get an approval response code...
+  switch ($ipn['payment_status']) {
+    case 'Failed':
+      $transaction->status = FNL_STORE_PAYMENT_STATUS_FAILURE;
+      $transaction->message = t("The payment has failed. This happens only if the payment was made from your customer’s bank account.");
+      break;
+
+    case 'Voided':
+      $transaction->status = FNL_STORE_PAYMENT_STATUS_FAILURE;
+      $transaction->message = t('The authorization was voided.');
+      break;
+
+    case 'Pending':
+      $transaction->status = FNL_STORE_PAYMENT_STATUS_PENDING;
+      $transaction->message = fnl_store_paypal_ipn_pending_reason($ipn['pending_reason']);
+      break;
+
+    case 'Completed':
+      $transaction->status = FNL_STORE_PAYMENT_STATUS_SUCCESS;
+      $transaction->message = t('The payment has completed.');
+      break;
+
+    case 'Refunded':
+      $transaction->status = FNL_STORE_PAYMENT_STATUS_SUCCESS;
+      $transaction->message = t('Refund for transaction @txn_id', array('@txn_id' => $ipn['parent_txn_id']));
+      break;
+  }
+
+  // Save the transaction information.
+  fnl_store_payment_transaction_save($transaction);
+  fnl_store_payment_update_order_status($order, $transaction);
+  $ipn['transaction_id'] = $transaction->transaction_id;
+  return TRUE;
+}
+
+/**
+ * Page callback Paypal cancel.
+ */
+function fnl_store_paypal_cancel($order) {
+
+  module_invoke_all('fnl_store_payment_cancel', $order);
+
+  $order->status = FNL_ORDER_STATUS_CART;
+  fnl_store_order_save($order);
+
+  drupal_set_message(t('Your PayPal payment was cancelled. Please feel free to continue shopping or contact us for assistance.'));
+
+  drupal_goto('cart');
+}
+
+/**
+ * Payment callback.
+ *
+ * @param $order
+ */
+function fnl_store_paypal_pay($order) {
+
+  drupal_goto('store/paypal-payment/redirect/' . $order->oid);
+}
+
+/**
+ * Loads a stored IPN by ID.
+ *
+ * @param $id
+ *   The ID of the IPN to load.
+ * @param $type
+ *   The type of ID you've specified, either the serial numeric "ipn_id" or the
+ *     actual PayPal "txn_id". Defaults to "txn_id".
+ *
+ * @return
+ *   The original IPN with some meta data related to local processing.
+ */
+function fnl_store_paypal_ipn_load($id, $type = 'txn_id') {
+  return db_select('fnl_store_paypal_ipn', 'i')
+    ->fields('i')
+    ->condition('i.' . $type, $id)
+    ->execute()
+    ->fetchAssoc();
+}
+
+/**
+ * Saves an IPN with some meta data related to local processing.
+ *
+ * @param $ipn
+ *   An IPN array with additional parameters for the order_id and Funnel store
+ *     Payment transaction_id associated with the IPN.
+ *
+ * @return bool|int
+ * The operation performed by drupal_write_record() on save; since the IPN is
+ * The operation performed by drupal_write_record() on save; since the IPN is
+ * received by reference, it will also contain the serial numeric ipn_id
+ * used locally.
+ */
+function fnl_store_paypal_ipn_save(&$ipn) {
+
+  if (!empty($ipn['ipn_id']) && fnl_store_paypal_ipn_load($ipn['txn_id'])) {
+    $ipn['changed'] = REQUEST_TIME;
+
+    return drupal_write_record('fnl_store_paypal_ipn', $ipn, 'ipn_id');
+  }
+  else {
+    $ipn['created'] = REQUEST_TIME;
+    $ipn['changed'] = REQUEST_TIME;
+
+    return drupal_write_record('fnl_store_paypal_ipn', $ipn);
+  }
+}
+
+/**
+ * Returns an appropriate message given a pending reason.
+ */
+function fnl_store_paypal_ipn_pending_reason($pending_reason) {
+  switch ($pending_reason) {
+    case 'address':
+      return t('The payment is pending because your customer did not include a confirmed shipping address and your Payment Receiving Preferences is set to allow you to manually accept or deny each of these payments.');
+    case 'authorization':
+      return t('You set the payment action to Authorization and have not yet captured funds.');
+    case 'echeck':
+      return t('The payment is pending because it was made by an eCheck that has not yet cleared.');
+    case 'intl':
+      return t('The payment is pending because you hold a non-U.S. account and do not have a withdrawal mechanism.');
+    case 'multi-currency':
+      return t('You do not have a balance in the currency sent, and you do not have your Payment Receiving Preferences set to automatically convert and accept this payment.');
+    case 'order':
+      return t('You set the payment action to Order and have not yet captured funds.');
+    case 'paymentreview':
+      return t('The payment is pending while it is being reviewed by PayPal for risk.');
+    case 'unilateral':
+      return t('The payment is pending because it was made to an e-mail address that is not yet registered or confirmed.');
+    case 'upgrade':
+      return t('The payment is pending because it was either made via credit card and you do not have a Business or Premier account or you have reached the monthly limit for transactions on your account.');
+    case 'verify':
+      return t('The payment is pending because you are not yet verified.');
+    case 'other':
+      return t('The payment is pending for a reason other than those listed above. For more information, contact PayPal Customer Service.');
+  }
+}

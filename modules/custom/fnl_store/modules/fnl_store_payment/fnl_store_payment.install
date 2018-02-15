@@ -1,0 +1,265 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Funnel store payment module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function fnl_store_payment_schema() {
+  $schema = array();
+
+  $schema['fnl_store_payment_transactions'] = array(
+    'description' => 'Payment transactions.',
+    'fields' => array(
+      'transaction_id' => array(
+        'type' => 'serial',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique Fnl_store_payment ID.',
+      ),
+      'oid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'The {fnl_store_order}.oid id of the order.',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that created this transaction.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'payment_provider' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Payment provider.',
+      ),
+      'status' => array(
+        'description' => 'The status of this transaction',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+      'remote_status' => array(
+        'description' => 'The status of the transaction at the payment provider.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+      'remote_id' => array(
+        'description' => 'The remote identifier for this transaction.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'payload' => array(
+        'description' => 'The payment-gateway specific payload associated with this transaction.',
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => TRUE,
+        'serialize' => TRUE,
+      ),
+      'message' => array(
+        'description' => 'The human-readable message associated to this transaction.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'amount' => array(
+        'description' => 'The amount of this transaction.',
+        'type' => 'numeric',
+        'precision' => '12',
+        'scale' => '2',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'currency_code' => array(
+        'description' => 'The currency code for the price.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'test_mode' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Is test mode',
+      ),
+      'created' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order created',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'changed' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Order changed date',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'data' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of additional data.',
+      ),
+//      hook_schema_item_fields_
+    ),
+    'primary key' => array('transaction_id'),
+    'indexes' => array(
+      'payment_provider' => array('payment_provider'),
+      'uid' => array('uid'),
+      'oid' => array('oid'),
+    ),
+  );
+
+  $schema['fnl_store_payment_transactions_history'] = array(
+    'description' => 'Payment transactions information about each transaction changes.',
+    'fields' => array(
+      'transaction_id' => array(
+        'description' => 'The primary identifier for a transaction.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'revision_id' => array(
+        'description' => 'The current revision_id version identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'oid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'The {fnl_store_order}.oid id of the order.',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that created this transaction.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'payment_provider' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Payment provider.',
+      ),
+      'status' => array(
+        'description' => 'The status of this transaction',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+      'remote_status' => array(
+        'description' => 'The status of the transaction at the payment provider.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+      'remote_id' => array(
+        'description' => 'The remote identifier for this transaction.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'payload' => array(
+        'description' => 'The payment-gateway specific payload associated with this transaction.',
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => TRUE,
+        'serialize' => TRUE,
+      ),
+      'message' => array(
+        'description' => 'The human-readable message associated to this transaction.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'amount' => array(
+        'description' => 'The amount of this transaction.',
+        'type' => 'numeric',
+        'precision' => '12',
+        'scale' => '2',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'currency_code' => array(
+        'description' => 'The currency code for the price.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'test_mode' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Is test mode',
+      ),
+      'created' => array(
+        'type' => 'datetime',
+        'description' => 'When this revision was created.',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'data' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of additional data.',
+      ),
+    ),
+    'primary key' => array('revision_id'),
+    'indexes' => array(
+      'transaction_id' => array('transaction_id'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Change amount field to float
+ */
+function fnl_store_payment_update_7000(&$sandbox) {
+  $schema = fnl_store_payment_schema();
+  db_change_field('fnl_store_payment_transactions', 'amount', 'amount', $schema['fnl_store_payment_transactions']['fields']['amount']);
+  db_change_field('fnl_store_payment_transactions_history', 'amount', 'amount', $schema['fnl_store_payment_transactions_history']['fields']['amount']);
+}
+
+/**
+ * Change amount field to numeric
+ */
+function fnl_store_payment_update_7001(&$sandbox) {
+  $schema = fnl_store_payment_schema();
+  db_change_field('fnl_store_payment_transactions', 'amount', 'amount', $schema['fnl_store_payment_transactions']['fields']['amount']);
+  db_change_field('fnl_store_payment_transactions_history', 'amount', 'amount', $schema['fnl_store_payment_transactions_history']['fields']['amount']);
+}

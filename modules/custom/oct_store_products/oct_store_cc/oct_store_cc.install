@@ -1,0 +1,267 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Oct store camps module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function oct_store_cc_schema() {
+  $schema = array();
+
+  $schema['oct_store_camp_class_purchase'] = array(
+    'description' => 'Store all camps and classes information attached to purchased product.',
+
+    'fields' => array(
+      'cid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Primary Key: Unique identifier for cart item.',
+      ),
+      'week' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Camps week',
+      ),
+      'event_date_from' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Camp event date from',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'event_date_to' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Camp event date to',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'birth_date' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Child birthdate',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'first_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Child first name',
+      ),
+      'last_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Child last name',
+      ),
+      'gender' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 25,
+        'default' => '',
+        'description' => 'Child gender',
+      ),
+      'days' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Days of week',
+      ),
+      'allergy' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'serialize' => FALSE,
+        'description' => 'Child allergy',
+      ),
+      'primary_first_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Primary Contact First Name',
+      ),
+      'primary_last_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Primary Contact Last Name',
+      ),
+      'primary_daytime_phone' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Primary Contact Daytime Phone',
+      ),
+      'primary_cell_phone' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Primary Contact Cell Phone',
+      ),
+      'primary_email' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Primary Contact Email',
+      ),
+      'alternate_first_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Alternate Contact First Name',
+      ),
+      'alternate_last_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Alternate Contact Last Name',
+      ),
+      'alternate_daytime_phone' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Alternate Contact Daytime Phone',
+      ),
+      'alternate_cell_phone' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Alternate Contact Cell Phone',
+      ),
+      'alternate_email' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Parent`s Information: Alternate Contact Email',
+      ),
+      'emergency_first_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Medical Release: Emergency Contact First Name',
+      ),
+      'emergency_last_name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Medical Release: Emergency Contact Last Name',
+      ),
+      'emergency_daytime_phone' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Medical Release: Emergency Contact Daytime Phone',
+      ),
+      'emergency_relationship' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Medical Release: Emergency Contact Relationship to child',
+      ),
+      'emergency_is_other_information' => array(
+        'type' => 'char',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Medical Release: Emergency Contact Is Other Information',
+      ),
+      'emergency_other_information' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'serialize' => FALSE,
+        'description' => 'Emergency Medical Release: Emergency Contact Other Information',
+      ),
+
+      'primary_phone_type' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Primary Contact phone type.',
+      ),
+      'emergency_phone_type' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Emergency Contact phone type.',
+      ),
+      'primary_relationship' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Primary Contact Relationship to child',
+      ),
+//      hook_schema_item_fields_
+
+    ),
+    'primary key' => array('cid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Add gender field to {oct_store_camp_class_purchase} table.
+ */
+function oct_store_cc_update_7100() {
+
+    $spec = array(
+      'type' => 'varchar',
+      'size' => 'normal',
+      'length' => 25,
+      'default' => '',
+      'description' => 'Child gender',
+    );
+
+    db_add_field('oct_store_camp_class_purchase', 'gender', $spec);
+}
+
+/**
+ * Add phone type fields to {oct_store_camp_class_purchase} table.
+ */
+function oct_store_cc_update_7101() {
+    $schema = oct_store_cc_schema();
+
+    db_add_field('oct_store_camp_class_purchase', 'primary_phone_type', $schema['oct_store_camp_class_purchase']['fields']['primary_phone_type']);
+    db_add_field('oct_store_camp_class_purchase', 'emergency_phone_type', $schema['oct_store_camp_class_purchase']['fields']['emergency_phone_type']);
+    db_add_field('oct_store_camp_class_purchase', 'primary_relationship', $schema['oct_store_camp_class_purchase']['fields']['primary_relationship']);
+}

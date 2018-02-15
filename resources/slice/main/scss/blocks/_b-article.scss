@@ -1,0 +1,34 @@
+.b-article {
+  @include clearfix();
+  position: relative;
+  margin-bottom: 40px;
+
+  .pull-left {
+    width: 30%;
+
+    img {
+      border: 8px solid #d7a625;
+    }
+  }
+
+  .pull-right {
+    width: 70%;
+    padding-left: 30px;
+
+    h2 {
+      font-family: Georgia, serif;
+      margin: 0 0 10px;
+      color: #cf6e00;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    p {
+      font-family: $Humanaregular;
+      color: #3B5F94;
+      font-weight: normal;
+      font-size: 16px;
+      padding-right: 10px;
+    }
+  }
+}

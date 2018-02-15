@@ -1,0 +1,50 @@
+&.page-faq {
+
+  .content-wrapper {
+
+    .item {
+      border-bottom: 2px solid #f2bd4b;
+      padding-left: 30px;
+      margin-bottom: 10px;
+
+      &.active {
+
+        .title-link:before {
+          @include transform(translateY(-50%) rotate(90deg));
+        }
+      }
+    }
+
+    .desc {
+      display: none;
+
+      a {
+        color: #245db3;
+        text-decoration: none;
+      }
+    }
+
+    .title-link {
+      font-family: $podkova-bold;
+      font-size: 18px;
+      color: #915100;
+      text-decoration: none;
+      position: relative;
+      display: block;
+      padding: 8px 0;
+
+      @media (min-width: $bp-small) {
+        font-size: 20px;
+      }
+
+      &:before {
+        @include pseudo-block($top: 50%, $left: -30px);
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-left: 11px solid #ebb542;
+        @include transform(translateY(-50%));
+      }
+    }
+
+  }
+}

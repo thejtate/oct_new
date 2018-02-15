@@ -1,0 +1,80 @@
+&.page-fairy {
+
+  .site-container {
+    color: #3B5F94;
+    font-family: $Humanaregular;
+    font-weight: normal;
+
+    .title-img {
+      width: 613px;
+      height: 329px;
+      margin-left: -28px;
+      margin-top: -20px;
+      margin-bottom: 75px;
+    }
+
+    h2 {
+      font-family: $HumanaBold;
+      display: block;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    h5 {
+      text-decoration: underline;
+
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+      }
+    }
+
+    .field-items {
+
+      .field-item {
+        border-top: 4px dotted #d7a625;
+        padding: 20px 0;
+        @include clearfix();
+        font-size: 17px;
+
+        .img {
+          float: left;
+          border: 8px solid #D7A625;
+          margin-right: 20px;
+
+          img {
+            display: block;
+            border: 2px solid #FCEA79;
+          }
+        }
+
+        strong {
+          font-weight: bold;
+          font-size: 17px;
+        }
+      }
+    }
+
+    .auction-items {
+      font-size: 14px;
+
+      .auction-item {
+        margin-bottom: 25px;
+
+        h5 {
+          margin: 0 0 10px 0;
+          font-size: 14px;
+        }
+
+        p {
+          text-indent: 35px;
+        }
+      }
+    }
+  }
+}

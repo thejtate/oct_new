@@ -1,0 +1,464 @@
+<?php
+
+/**
+ * @file
+ * Funnel store
+ */
+
+define('FNL_ORDER_STATUS_CART', 'Cart');
+define('FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS', 'Payment In Progress');
+define('FNL_ORDER_STATUS_ON_CHECKOUT', 'On Checkout');
+define('FNL_ORDER_STATUS_PAYMENT_FAILED', 'Payment Failed');
+define('FNL_ORDER_STATUS_PAYMENT_RECEIVED', 'Payment Received');
+define('FNL_ORDER_STATUS_PAYMENT_PARTIAL', 'Partial Payment');
+define('FNL_ORDER_STATUS_PAYMENT_PENDING', 'Payment pending');
+define('FNL_ORDER_STATUS_COMPLETE', 'Complete');
+define('FNL_ORDER_STATUS_TEST_PAYMENT_FAILED', 'Test mode: Payment Failed');
+define('FNL_ORDER_STATUS_TEST_PAYMENT_RECEIVED', 'Test mode: Payment Received');
+
+define('FNL_STORE_CHECKOUT_URL', 'store/checkout');
+
+/**
+ * Implements hook_menu().
+ */
+function fnl_store_menu() {
+  $items = array();
+
+  $items['admin/settings/funnel-store'] = array(
+    'title' => 'Store settings',
+    'access callback' => 'user_access',
+    'access arguments' => array('fnl store settings administer'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fnl_store_admin_form'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/fnl_store.admin.inc',
+  );
+
+  $items['store/manage'] = array(
+    'title' => 'Store manage',
+    'description' => 'Store',
+    'position' => 'left',
+    'weight' => 1,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('fnl store manage access'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+  );
+
+  $items[FNL_STORE_CHECKOUT_URL] = array(
+    'title' => 'Checkout',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fnl_store_checkout_form'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/fnl_store.checkout.inc',
+  );
+
+  $items['store/complete/%fnl_store_order'] = array(
+    'title' => 'Checkout complete.',
+    'access callback' => 'fnl_store_checkout_complete_order_access',
+    'access arguments' => array(2),
+    'page callback' => 'fnl_store_checkout_complete',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['store/order-status/edit/%fnl_store_order/%'] = array(
+    'title' => 'Edit field AJAX',
+    'access callback' => 'fnl_store_edit_order_access',
+    'access arguments' => array(3),
+    'page callback' => 'fnl_store_edit_order_status_ajax_callback',
+    'theme callback' => 'ajax_base_page_theme',
+    'page arguments' => array(3, 4),
+    'type' => MENU_CALLBACK,
+    'delivery callback' => 'ajax_deliver',
+  );
+
+  //TODO: order review disabled for now. Finish it or nix?
+  $items['store/review/%fnl_store_order'] = array(
+    'title' => 'Order Review ',
+    'access callback' => 'fnl_store_review_order_access',
+    'access arguments' => array(2),
+    'page callback' => 'fnl_store_review_order',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
+  if(module_exists('devel')) {
+    $items['store/manage/order/%fnl_store_order/devel'] = array(
+      'title' => 'Devel',
+      'page callback' => 'devel_load_object',
+      'page arguments' => array('fnl_store_order', 3),
+      'access arguments' => array('access devel information'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'devel.pages.inc',
+      'file path' => drupal_get_path('module', 'devel'),
+      'weight' => 100,
+    );
+  }
+
+
+  return $items;
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function fnl_store_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'fnl_store') . '/views',
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function fnl_store_permission() {
+  $return = array();
+
+  $return['fnl store settings administer'] = array(
+    'title' => t('Change Funnel store settings'),
+    'description' => t('Access to Funnel store settings page'),
+  );
+
+  $return['fnl store settings manage'] = array(
+    'title' => t('Access to store management section'),
+    'description' => t('Access to store management section'),
+  );
+
+  $return['fnl store edit orders'] = array(
+    'title' => t('Edit orders'),
+    'description' => t('Allow users to change order status, etc.'),
+  );
+
+  $return['fnl store view full orders info'] = array(
+    'title' => t('View any orders'),
+    'description' => t('Allow users to view order details.'),
+  );
+
+  $return['fnl store manage access'] = array(
+    'title' => t('Access to store manager section.'),
+    'description' => t('Allow users to access manager section.'),
+  );
+
+  $return['fnl store view any complete pages'] = array(
+    'title' => t('Access to any order iorder complete pages.'),
+    'description' => t('Allow users to see order complete pages.'),
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fnl_store_theme() {
+  $return = array();
+
+  $return['fnl_store_order_totals'] = array(
+    'variables' => array('order' => NULL),
+    'template' => 'templates/fnl-store-order-totals'
+  );
+
+  $return['fnl_store_checkout_complete_page'] = array(
+    'variables' => array('order' => NULL),
+    'template' => 'templates/fnl-store-checkout-complete-page'
+  );
+  $return['fnl_store_order_full_info_header'] = array(
+    'variables' => array('order' => NULL),
+    'template' => 'templates/fnl-store-order-full-info-header'
+  );
+
+  return $return;
+}
+
+/**
+ * Review order page access callback.
+ *
+ * @return bool
+ */
+function fnl_store_review_order_access($order) {
+  $user_id = fnl_store_cart_user_id();
+
+  return ($user_id == $order->user_id) && $order->status == FNL_ORDER_STATUS_CART;
+}
+
+/**
+ * Manually Edit order access callback.
+ *
+ * @return bool
+ */
+function fnl_store_edit_order_access($order) {
+  $user_id = fnl_store_cart_user_id();
+
+  return user_access('fnl store edit orders') || ($user_id === $order->user_id);
+}
+
+/**
+ * Checkout complete order page access callback.
+ *
+ * @return bool
+ */
+function fnl_store_checkout_complete_order_access($order) {
+  $user_id = fnl_store_cart_user_id();
+
+  return user_access('fnl store view any complete pages') || ($user_id === $order->user_id);
+}
+
+/**
+ * Review order page callback.
+ *
+ * @param $order
+ */
+function fnl_store_review_order($order) {
+
+  $content = array();
+
+  $content['cart'] = array(
+    '#markup' => views_embed_view('cart', 'checkout'),
+  );
+
+  drupal_alter('fnl_store_review_order', $content, $order);
+
+  return $content;
+}
+
+/**
+ * Payment complete page callback.
+ */
+function fnl_store_checkout_complete($order) {
+
+  $type = !empty($order->data['type']) ? $order->data['type'] : 'default';
+  return theme('fnl_store_checkout_complete_page__' . $type, array('order' => $order));
+}
+
+/**
+ * Change order status. Ajax Callback.
+ *
+ * @param $order
+ * @param $status
+ *
+ * @return array ajax commands
+ */
+function fnl_store_edit_order_status_ajax_callback($order, $status) {
+
+  $result = array('#type' => 'ajax', '#commands' => array());
+
+  if(in_array($status, fnl_store_order_statuses())) {
+
+    $order->status = $status;
+    fnl_store_order_save($order);
+
+  } else {
+    $result['#commands'][] = ajax_command_alert(
+      t("Error: Invalid value.")
+    );
+  }
+
+  return $result;
+}
+
+
+/**
+ * Load order.
+ *
+ * @param $id order id
+ * @param bool $reset
+ * @return mixed
+ */
+function fnl_store_order_load($id, $reset = FALSE) {
+  $orders = &drupal_static('fnl_store_orders');
+  if (!isset($orders[$id]) || $reset) {
+    $order = db_select('fnl_store_orders', 'o')
+      ->condition('oid', $id)
+      ->fields('o')
+      ->execute()
+      ->fetchObject();
+
+    if(!empty($order->data)) {
+      $order->data = unserialize($order->data);
+    }
+
+    drupal_alter('fnl_store_order_load', $order);
+    $orders[$id] = !empty($order) ? $order : NULL;
+  } else {
+    $order = $orders[$id];
+  }
+
+  return $order;
+}
+
+/**
+ * Create empty order object
+ *
+ * @param $user_id optional user id. Current user id by default
+ *
+ * @return object Order
+ */
+function fnl_store_empty_order($user_id = NULL) {
+
+  $order = (object) array(
+    'oid' => 0,
+    'subtotal_amount' => 0,
+    'amount' => 0,
+    'user_id' => empty($user_id) ? fnl_store_cart_user_id() : $user_id,
+  );
+
+  drupal_alter('fnl_store_empty_order', $order);
+
+  return $order;
+}
+
+/**
+ * Save order data to database.
+ *
+ * @param $order
+ * @return bool|int
+ */
+function fnl_store_order_save($order) {
+  $now_datetime = gmdate(DATE_FORMAT_DATETIME, REQUEST_TIME);
+
+  if(!empty($order->oid)) {
+    //update
+    $db_primary_keys = 'oid';//required for drupal_write_record() for update row
+    $order->original = fnl_store_order_load($order->oid, TRUE);
+
+    if ($order->original->status == FNL_ORDER_STATUS_CART && $order->status != FNL_ORDER_STATUS_CART) {
+      //Order moved from cart to other state
+      $order->created = $now_datetime;
+    }
+
+  } else {
+    //insert
+    $order->created = $now_datetime;
+    $order->cart_created = $now_datetime;
+    $db_primary_keys = array();//empty for insert query in drupal_write_record()
+  }
+
+  $order->status = empty($order->status) ? FNL_ORDER_STATUS_CART : $order->status;
+  $order->changed = $now_datetime;
+  $order->user_id = empty($order->user_id) ? fnl_store_cart_user_id() : $order->user_id;
+
+  drupal_alter('fnl_store_order_before_save', $order);
+
+  if (drupal_write_record('fnl_store_orders', $order, $db_primary_keys)) {
+    drupal_alter('fnl_store_order_after_save', $order);
+
+    if (!empty($order->oid)) {
+      $orders = &drupal_static('fnl_store_orders');
+      $orders[$order->oid] = $order;
+    }
+
+    return $order;
+  }
+  else {
+    return FALSE;
+  }
+
+}
+
+function fnl_store_order_delete($oid) {
+
+  $orders = &drupal_static('fnl_store_orders');
+  $orders[$oid] = NULL;
+  module_invoke_all('fnl_store_order_delete', $oid);
+  db_delete('fnl_store_orders')
+    ->condition('oid', $oid)
+    ->execute();
+
+}
+
+/**
+ * Return products info array
+ *
+ * @return array
+ */
+function fnl_store_products() {
+  return module_invoke_all('fnl_store_products');
+}
+
+/**
+ * Return all available order statuses
+ *
+ * @return array
+ */
+function fnl_store_order_statuses() {
+  return array(
+    FNL_ORDER_STATUS_CART,
+    FNL_ORDER_STATUS_ON_CHECKOUT,
+    FNL_ORDER_STATUS_PAYMENT_IN_PROGRESS,
+    FNL_ORDER_STATUS_PAYMENT_FAILED,
+    FNL_ORDER_STATUS_PAYMENT_RECEIVED,
+    FNL_ORDER_STATUS_PAYMENT_PARTIAL,
+    FNL_ORDER_STATUS_TEST_PAYMENT_FAILED,
+    FNL_ORDER_STATUS_TEST_PAYMENT_RECEIVED,
+    FNL_ORDER_STATUS_COMPLETE,
+  );
+}
+
+/**
+ * Return formatted amount;
+ */
+function fnl_store_format_amount($value) {
+  $currency_symbol = '$';
+
+  $sign = ($value < 0) ? '-' : '';
+
+  return $sign . $currency_symbol . number_format(abs($value), 2);
+}
+
+/**
+ * Convert db date to right time zone, and return date in required formatting.
+ *
+ * @param $date_string
+ * @param $format
+ * @return string
+ */
+function fnl_store_db_date_format($date_string, $format = 'm/d/Y H:i a') {
+  //db date has UTC time zone
+  $date_obj = date_create_from_format(DATE_FORMAT_DATETIME, $date_string, new DateTimeZone('UTC'));
+  //convert to current time zone
+  $date_obj->setTimezone(new DateTimeZone(drupal_get_user_timezone()));
+  //return formatted string
+  return $date_obj->format($format);
+}
+
+/**
+ * Convert db date to right formatting. Without changing timezone
+ *
+ * @param $date_string
+ * @param $format
+ * @return string
+ */
+function fnl_store_db_date_format_no_timezone($date_string, $format = 'm/d/Y H:i a') {
+  //db date has UTC time zone
+  $date_obj = date_create_from_format(DATE_FORMAT_DATETIME, $date_string);
+  //return formatted string
+  return $date_obj->format($format);
+}
+
+/**
+ * Helper function for safe printing elements in templates.
+ *
+ * @param $value
+ */
+function fnl_store_print(&$value) {
+
+  print (!empty($value) ? check_plain($value) : '');
+}
+
+/**
+ * Delete all orders.
+ */
+function fnl_store_order_delete_all() {
+  $r = db_select('fnl_store_orders', 'o')
+    ->fields('o', array('oid'))
+    ->execute()
+    ->fetchCol();
+
+  foreach($r as $oid) {
+    fnl_store_order_delete($oid);
+  }
+}

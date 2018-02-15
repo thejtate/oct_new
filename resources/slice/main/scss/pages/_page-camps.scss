@@ -1,0 +1,81 @@
+&.page-camps {
+
+  .content-inner {
+    text-align: center;
+    color: #3B5F94;
+    padding: 0 41px 20px 60px;
+
+    h4 {
+      background: image-url('bg/bg-stretchy-titles-center.png') repeat-x;
+      display: inline-block;
+      padding: 14px 0;
+      position: relative;
+      color: #FBFFB2;
+      font-size: 22px;
+      font-family: $atlas;
+      text-shadow: -2px 2px 0 #A65E0C;
+      z-index: 100;
+
+      &:before {
+        @include pseudo-block($top: 0, $left: -25px);
+        @include oneline-sprite-box($icons, bg-stretchy-titles);
+        z-index: -1;
+      }
+
+      &:after {
+        @include pseudo-block($top: 1px, $right: -18px);
+        @include oneline-sprite-box($icons, bg-stretchy-titles-1);
+        z-index: -1;
+      }
+    }
+
+    h2 {
+      color: #CF6E00;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: Georgia, serif;
+      text-align: left;
+      margin: 0 0 20px 0;
+    }
+
+    h5 {
+      font-weight: bold;
+      font-size: 24px;
+      margin: 15px 0 0 0;
+      text-align: left;
+    }
+
+    ul {
+      text-align: left;
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      padding: 0;
+      margin: 10px 0;
+
+      li {
+        list-style: none;
+
+        @include clearfix();
+
+        span {
+          float: left;
+          width: 15%;
+
+          &.strong {
+            font-weight: bold;
+          }
+
+          &:first-child {
+            width: 70%;
+          }
+        }
+      }
+    }
+
+    .description {
+      text-align: left;
+      font-size: 16px;
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+    }
+  }
+}

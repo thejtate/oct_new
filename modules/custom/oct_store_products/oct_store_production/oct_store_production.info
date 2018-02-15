@@ -1,0 +1,11 @@
+name = OCT store production
+description = OCT store production
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+files[] = views/oct_store_production.views.inc
+
+dependencies[] = fnl_store
+dependencies[] = fnl_store_cart
+

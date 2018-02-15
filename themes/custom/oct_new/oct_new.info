@@ -1,0 +1,22 @@
+name = OCT New theme
+core = 7.x
+
+stylesheets[all][] = css/styles.css
+stylesheets[all][] = css/custom.css
+stylesheets[print][] = css/print.css
+
+scripts[] = js/lib/jquery.columnizer.js
+scripts[] = js/lib/slick.js
+scripts[] = js/lib/select2.full.js
+scripts[] = js/js.js
+
+regions[header] = Header
+regions[help] = Help
+regions[content_top] = Content top
+regions[content] = Content
+regions[content_right] = Content Right
+regions[content_left_bottom] = Content left bottom
+regions[content_right_bottom] = Content right bottom
+regions[content_bottom] = Content bottom
+regions[footer] = Footer
+regions[footer_bottom] = Footer bottom

@@ -1,0 +1,10 @@
+name = OCT store customers
+description = OCT store customers
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+files[] = views/oct_store_customers.views.inc
+
+dependencies[] = fnl_store
+dependencies[] = fnl_store_cart

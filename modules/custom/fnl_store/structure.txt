@@ -1,0 +1,67 @@
+
+===Store common part===
+
+Modules
+
+1) fnl_store
+
+    TABLES:
+    fnl_store_orders DONE
+
+
+2) fnl_store_cart
+
+    TABLES:
+    fnl_store_cart DONE
+
+    PAGES:
+    cart - Save cart items to order and redirect to checkout page, or edit cart items DONE
+
+    ADDITIONAL:
+    Cart Block. DONE
+
+
+3) fnl_store_payment
+
+   TABLES:
+    fnl_store_payment_transactions (last transaction states) DONE
+    fnl_store_payment_transactions_history (all transaction changes over time) DONE
+
+   PAGES:
+    Checkout page (select payment variant and pay) DONE
+    Manage payment submodules DONE
+
+
+===OCT Store customizations===
+
+- oct_store_discount
+
+  NODES:
+    store_discount (DONE)
+
+  PAGES:
+    discount settings (Done)
+
+
+- fnl_store_fee
+
+  NODES:
+    store_fee(DONE)
+
+  PAGES:
+      fee settings: (DONE)
+
+
+
+Separate product modules
+
+- oct_store_cc (camps and classes) (DONE)
+- oct_store_production  Production tickets(DONE)
+- oct_store_ftb Fairy tale ball(DONE)
+- oct_store_donation
+
+===Comments===
+
+//process payments (should allow extending with api) DONE
+
+ fnl_store_logs (nix for now, using drupal watchdog logs)

@@ -1,0 +1,495 @@
+.site-header {
+  position: relative;
+  z-index: 5;
+
+  &:before {
+    @include pseudo-block($top: 100%, $left: 0, $right: 0);
+    background: image-url('bg/nav-bg.png');
+    background-repeat: repeat-x;
+    height: 31px;
+    border-top: 10px solid #cf760f;
+    z-index: 3;
+    margin-top: -1px;
+    background-position: 0 -1px;
+
+    @media (min-width: $bp-small) {
+      display: none;
+      margin-top: 0;
+      background-position: 0% 0%;
+    }
+  }
+
+  a {
+    color: #ffd773;
+  }
+
+  .btn-nav {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    @include translate(0, -50%);
+    z-index: 9999;
+    font-size: 23px;
+    font-family: $podkova-bold;
+    padding: 0 50px 0 0;
+    text-shadow: -1.4px 1.4px 0 #c46008;
+    text-decoration: none;
+
+    @media (min-width: $bp-small) {
+      display: none;
+    }
+
+    & > span {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      @include translate(0, -50%);
+
+      &:before, &:after {
+        content: '';
+      }
+
+      &:before, &:after, span {
+        margin-top: 4px;
+        display: block;
+        width: 30px;
+        height: 5px;
+        border-radius: 3px;
+        background-color: #ffd773;
+      }
+
+      &:before {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .btn-home {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    @include translate(0, -50%);
+    @include text-hide();
+    @include oneline-sprite-box($icons, home);
+    @include transition(all .0s);
+
+    &:hover  {
+      @include oneline-sprite-box($icons, home-active);
+    }
+
+    @media (min-width: $bp-small) {
+      display: none;
+    }
+  }
+
+  .logo {
+    width: 90%;
+    margin: 0 auto;
+
+    a {
+      display: block;
+      @include transition(all .3s);
+
+      &:hover {
+        opacity: .7;
+      }
+    }
+
+    img {
+      display: none;
+      vertical-align: baseline;
+
+      @media (min-width: $bp-small) {
+        display: inline;
+      }
+
+      &.mobile {
+        display: inline;
+
+        @media (min-width: $bp-small) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .site-container {
+   position: relative;
+  }
+
+  .header-top {
+    text-align: center;
+    padding: 45px 0 5px;
+    background: image-url('bg/header.png');
+
+    @media (min-width: $bp-small) {
+      padding: 15px 0;
+    }
+  }
+
+  .block-fnl-store-cart {
+    position: absolute;
+    top: 7px;
+    left: 56px;
+    z-index: 20;
+
+    @media (min-width: $bp-small) {
+      left: auto;
+      top: 50%;
+      right: 0;
+      @include transform(translateY(-50%));
+    }
+
+    a {
+      text-decoration: none;
+      position: relative;
+
+      &:before {
+        @include pseudo-block($top: 50%, $right: 100%);
+        @include oneline-sprite-box($icons, cart);
+        @include transform(translateY(-50%));
+      }
+    }
+
+    .count {
+      background: #c46008;
+      display: inline-block;
+      padding: 2px 8px;
+      @include border-radius(50%);
+    }
+
+    .text {
+      @include text-hide();
+    }
+  }
+
+  .header-bottom {
+    background-color: #cf760f;
+    font-family: $podkova-bold;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+
+    @media (min-width: $bp-small) {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: auto;
+      height: auto;
+    }
+
+    &:before {
+      @include pseudo-block($top: 100%, $left: 0, $right: 0);
+      background: image-url('bg/nav-bg.png');
+      background-repeat: repeat-x;
+      height: 21px;
+      z-index: 3;
+      display: none;
+
+      @media (min-width: $bp-small) {
+        display: block;
+      }
+    }
+
+    .nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9998;
+      visibility: hidden;
+      opacity: 0;
+      @include transition(visibility .6s, opacity .6s, background .6s);
+
+      .mobile-nav & {
+        visibility: visible;
+        opacity: 1;
+        background: rgba(0, 0, 0, .4);
+
+        @media (min-width: $bp-small) {
+          background: none;
+        }
+      }
+
+      @media (min-width: $bp-small) {
+        position: static;
+        width: auto;
+        height: auto;
+        z-index: auto;
+        visibility: visible;
+        opacity: 1;
+        @include transition(visibility .0s, opacity .0s, background .0s);
+      }
+
+      & > ul {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background-color: #c8640d;
+        width: calc(100% - 76px);
+        height: 100vh;
+        overflow-y: auto;
+        @include transition(background .0s);
+        -webkit-overflow-scrolling: touch;
+        font-size: 20px;
+
+        @media (min-width: $bp-small) {
+          padding: 0;
+          position: static;
+          top: auto;
+          left: auto;
+          background-color: transparent;
+          height: auto;
+          overflow: visible;
+
+          display: table;
+          width: 100%;
+          font-size: 18px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 22px;
+        }
+
+        @media (min-width: $bp-large) {
+          font-size: 26px;
+        }
+
+        & > li {
+          margin: 0 5px 0 0;
+          padding: 0;
+          position: relative;
+          background: #cf760f;
+
+          @media (min-width: $bp-small) {
+            background: transparent;
+            padding: 0 8px 0 0;
+          }
+
+          &:last-child {
+            margin: 0 0 50px;
+            padding: 0;
+
+            .page-user & {
+              margin: 0 0 95px;
+
+              @media (min-width: $bp-small) {
+                margin: 0;
+              }
+            }
+
+            @media (min-width: $bp-small) {
+              margin: 0;
+            }
+          }
+
+          &:first-child {
+            @include text-hide();
+            display: none;
+
+            @media (min-width: $bp-small) {
+              display: table-cell;
+            }
+
+            & > a {
+              @include oneline-sprite-box($icons, home);
+              @include transition(all .0s);
+
+              @media (min-width: $bp-middle) {
+                margin-top: 2px;
+              }
+
+              @media (min-width: $bp-large) {
+                margin-top: 4px;
+              }
+            }
+
+            &:hover > a {
+              @include oneline-sprite-box($icons, home-active);
+            }
+          }
+        }
+      }
+
+      ul {
+        margin: 0;
+        padding: 30px 0;
+
+        @media (min-width: $bp-small) {
+          padding: 16px 60px 16px 0;
+        }
+
+        .expanded {
+          position: relative;
+
+
+          &:before {
+            @include pseudo-block($bottom: -40px, $left: 50%);
+            @include transform(translateX(-50%));
+            height: 40px;
+            z-index: 5;
+            width: 150px;
+            display: none;
+
+            @media (min-width: $bp-small) {
+              display: block;
+            }
+
+          }
+
+          & > a {
+            width: 80%;
+            display: inline-block;
+
+            @media (min-width: $bp-small) {
+              width: auto;
+              display: block;
+            }
+          }
+
+          .btn-mobile {
+            float: right;
+            width: 20%;
+            height: 36px;
+            position: relative;
+            padding: 0;
+            outline: none;
+
+            @media (min-width: $bp-small) {
+              display: none;
+            }
+
+            &:before {
+              @include pseudo-block($top: 50%, $left: 5px);
+              @include translate(0, -50%);
+              border-top: 14px solid #ffd773;
+              border-left: 10px solid transparent;
+              border-right: 10px solid transparent;
+            }
+          }
+
+          &:hover ul {
+
+            @media (min-width: $bp-small) {
+              display: block;
+            }
+          }
+
+          &.nav-active {
+
+            .btn-mobile:before {
+              border-top: none;
+              border-bottom: 14px solid #ffd773;
+            }
+          }
+
+          ul {
+            position: relative;
+            padding: 0;
+            z-index: 1;
+            font-size: 18px;
+            width: 100%;
+            background: #c8640d;
+            display: none;
+
+            @media (min-width: $bp-small) {
+              margin-top: 4px;
+              position: absolute;
+              display: none;
+              left: 50%;
+              top: 154%;
+              @include transform(translateX(-50%));
+              min-width: 220px;
+              padding-top: 15px;
+              @include box-shadow(-7px 6px 0 0 rgba(0, 0, 0, 0.3));
+              text-align: center;
+            }
+
+            @media (min-width: $bp-middle) {
+              margin-top: 5px;
+              font-size: 20px;
+            }
+
+            @media (min-width: $bp-large) {
+              font-size: 22px;
+            }
+
+            li {
+              margin: 0;
+              padding: 0;
+
+              &:first-child {
+                padding-top: 10px;
+
+                @media (min-width: $bp-small) {
+                  padding-top: 0;
+                }
+              }
+
+              &:hover a {
+                background: #cf760f;
+              }
+
+              a {
+                padding: 12px 10px 12px 25px;
+                text-shadow: -1.4px 1.4px 0 #b35000;
+
+                @media (min-width: $bp-small) {
+                  padding: 9px 0;
+                  text-shadow: -3px 3px 0 #b35000;
+                }
+
+                @media (min-width: $bp-middle) {
+                  padding: 12px 0;
+                }
+
+                @media (min-width: $bp-large) {
+                  padding: 15px 0;
+                }
+              }
+            }
+          }
+
+          li {
+            display: block;
+          }
+        }
+
+        li {
+          margin: 0 0 10px 0;
+          list-style: none;
+          display: block;
+
+          @media (min-width: $bp-small) {
+            display: table-cell;
+            text-align: center;
+            vertical-align: top;
+            margin: 0 6px 0 0;
+          }
+
+          & > .active a, &:hover > a {
+            color: #fbffb2;
+          }
+
+          a {
+            display: block;
+            color: #ffd773;
+            text-decoration: none;
+            @include transition(color .3s);
+            padding: 6px 10px 6px 25px;
+            text-shadow: -1.4px 1.4px 0 #c46008;
+
+            @media (min-width: $bp-small) {
+              text-shadow: -3px 3px 0 #c46008;
+              padding: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}

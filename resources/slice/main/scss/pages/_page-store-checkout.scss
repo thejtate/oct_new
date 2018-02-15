@@ -1,0 +1,154 @@
+&.page-store-checkout {
+
+  .content-inner {
+    color: #3b5f94;
+    font-family: $Humanaregular;
+    font-size: 16px;
+
+    .jq-selectbox {
+      width: 246px;
+    }
+
+    .table-price {
+      float: right;
+
+      tbody {
+        border: none;
+        font-size: 20px;
+
+        td{
+          padding: 3px 4px;
+        }
+
+        .subtotal {
+          font-size: 15px;
+          margin: 7px 0;
+        }
+      }
+    }
+
+    .content {
+      fieldset {
+        border: 4px solid #D7A625;
+
+        legend {
+          color: #CF760F;
+          font-size: 14px;
+          font-weight: bold;
+          font-family: Verdana, Arial, sans-serif;
+        }
+      }
+
+      .store-table {
+        background-color: #FBFFB2;
+        border: 2px solid #CF760F;
+        border-top: none;
+        margin-bottom: 15px;
+
+        thead {
+
+          tr {
+            background-color: #E6BC3A;
+
+          }
+
+          th {
+            border: none;
+            color: #CF760F;
+            font-size: 14px;
+            padding: 4px 10px;
+            font-family: Verdana, Arial, sans-serif;
+            font-weight: normal;
+
+          }
+        }
+
+        tbody tr {
+          background: none;
+          border-bottom: 1px solid #e6bc3a;
+
+          td {
+            text-align: center;
+            padding: 0 8px;
+
+            &.views-field-delete-link {
+              padding: 0 13px;
+
+              a {
+                @include text-hide();
+                background: image-url('tmp/enrollment-close.png');
+                display: block;
+                width: 25px;
+                height: 25px;
+              }
+            }
+
+            ul {
+              margin: 7px 0;
+              padding: 0 0 0 15px;
+            }
+
+            &:first-child {
+              text-align: left;
+            }
+          }
+
+        }
+      }
+
+      .form-type-textfield, .form-type-textarea, .form-type-masked-input {
+        margin: 5px 0;
+
+        label {
+          display: inline-block;
+          width: 170px;
+          vertical-align: top;
+          padding-right: 5px;
+          font-size: 14px;
+        }
+
+        .form-text {
+          width: 245px;
+          background: #fbffb2;
+          border: solid #c47500;
+          border-width: 2px 2px 0 0;
+          padding: 3px;
+          font-size: 14px;
+          margin-right: 6px;
+          letter-spacing: -1px;
+        }
+
+        .form-textarea-wrapper {
+          vertical-align: top;
+          width: 380px;
+          display: inline-block;
+
+          .form-textarea {
+            background: #fbffb2;
+            border: solid #c47500;
+            border-width: 2px 2px 0 0;
+            padding: 3px;
+            font-size: 14px;
+            margin-right: 6px;
+            letter-spacing: -1px
+          }
+        }
+      }
+      .form-item-user-state {
+
+        label {
+          width: 170px;
+          display: inline-block;
+        }
+
+        .form-select {
+          display: inline-block;
+        }
+      }
+
+      .form-wrapper {
+        margin-bottom: 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,117 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the "Funnel store cart" module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function fnl_store_cart_schema() {
+  $schema = array();
+
+
+  $schema['fnl_store_cart'] = array(
+    'description' => 'Stores products placed in shopping carts.',
+    'fields' => array(
+      'cid' => array(
+        'type' => 'serial',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique identifier for cart item.',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Product name',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'default' => '',
+        'description' => 'Product type',
+      ),
+      'oid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'The {fnl_store_order}.oid id of the order.',
+      ),
+      'user_id' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'A user-specific cart ID. For authenticated users, their {users}.uid. For anonymous users, a token.',
+      ),
+      'sku' => array(
+        'type' => 'varchar',
+        'size' => 'normal',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Uniq Product Stock keeping unit.',
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'The {node}.nid of the product. If exist.',
+      ),
+      'qty' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'The number of this product in the cart.',
+      ),
+      'added' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Time were the product in cart was added. In UTC timezone.',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'amount' => array(
+        'type' => 'float',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Product amount. For each.',
+      ),
+      'data' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of extra data.',
+      ),
+    ),
+    'primary key' => array('cid'),
+    'indexes' => array(
+      'oid' => array('oid'),
+    ),
+  );
+
+  return $schema;
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function fnl_store_cart_uninstall() {
+  //remove all variables
+}

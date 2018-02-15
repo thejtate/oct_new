@@ -1,0 +1,13 @@
+name = OCT store emails
+description = OCT store emails
+package = OCT
+core = 7.x
+version = 7.x-1.x
+
+configure = store/manage/emails
+
+;files[] =
+dependencies[] = fnl_store
+dependencies[] = fnl_store_cart
+dependencies[] = mimemail
+

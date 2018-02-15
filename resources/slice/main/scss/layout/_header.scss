@@ -1,0 +1,193 @@
+.site-header {
+
+  .inner {
+    position: relative;
+
+    &:before {
+      @include pseudo-block($top: 0, $left: 0, $right: 0);
+      height: 283px;
+      z-index: -1;
+    }
+
+    .page-main &, .page-header-pig & {
+
+      &:before {
+        background: image-url('tmp/top-img1.png') no-repeat !important;
+      }
+    }
+
+    .page-page &, .page-about & {
+
+      &:before {
+        background: image-url('tmp/top-img4.png') no-repeat;
+      }
+    }
+
+    .page-Contact-Us & {
+
+      &:before {
+        background: image-url('tmp/top-img6.png') no-repeat;
+      }
+    }
+  }
+
+  & > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .logo {
+    width: 364px;
+    height: 251px;
+    margin-left: 40px;
+    top: 0;
+
+    a {
+      display: block;
+    }
+  }
+
+  .nav {
+    background: image-url('bg/bg-menu.png') no-repeat;
+    height: 66px;
+    position: relative;
+    z-index: 50;
+    margin-top: 10px;
+    left: 1px;
+
+    & > ul {
+      margin: 0;
+      padding-left: 40px;
+      list-style: none;
+
+      & > li {
+        float: left;
+        padding-right: 8px;
+        padding-left: 8px;
+        padding-top: 21px;
+        position: relative;
+        top: -8px;
+        list-style: none;
+
+        &:hover {
+
+          .menu {
+            display: block;
+          }
+
+          & > a {
+            color: #fbffcc;
+          }
+        }
+
+        &.item-1 {
+          height: 55px;
+        }
+        &.item-2 {
+          height: 56px;
+        }
+        &.item-3 {
+          height: 57px;
+        }
+        &.item-4 {
+          height: 58px;
+        }
+        &.item-5 {
+          height: 59px;
+        }
+        &.item-6 {
+          height: 61px;
+        }
+        &.item-7 {
+          height: 62px;
+        }
+        &.item-8 {
+          height: 63px;
+        }
+
+        &.active-trail {
+          background: image-url('tmp/menu-left.png') no-repeat 0 0;
+          padding-right: 0;
+          padding-left: 19px;
+
+          &:before {
+            @include pseudo-block($top: 0, $right: -12px, $bottom: 0);
+            background: image-url('tmp/menu-right.png');
+            width: 13px;
+          }
+
+          &:after {
+            @include pseudo-block($bottom: -13px, $left: 50%);
+            margin-left: -5px;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 14px solid #4978B5;
+          }
+
+          a {
+            color: #fff;
+            text-shadow: -2px 2px 0 #375a88;
+          }
+        }
+
+        & > a {
+          color: #ffb299;
+          text-shadow: -2px 2px 0 #7f2c32;
+          text-decoration: none;
+          display: block;
+          margin-bottom: -20px;
+          font-size: 18px;
+          font-family: $HumanaBold;
+        }
+
+        .menu {
+          background: none;
+          background: rgba(0, 0, 0, 0.25);
+          padding: 0 0 5px 0;
+          position: absolute;
+          top: 55px;
+          left: 0;
+          display: none;
+          z-index: 60;
+          list-style: none;
+
+          li {
+            background: #a93b43;
+            margin-right: -8px;
+            position: relative;
+            text-align: center;
+            list-style: none;
+            border-bottom: 1px solid #b95560;
+
+            &:hover {
+              background: #92292f;
+
+              a {
+                color: #fbffcc;
+              }
+            }
+
+            a {
+              font-family: $HumanaBold;
+              display: inline-block;
+              line-height: 20px;
+              font-size: 16px;
+              min-width: 100px;
+              padding: 6px 15px;
+              text-align: left;
+              width: 100%;
+              color: #ffb299;
+              text-decoration: none;
+
+              &:first-child {
+                border-top: none;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+}

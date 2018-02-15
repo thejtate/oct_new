@@ -1,0 +1,206 @@
+&.page-donation {
+
+  i {
+    font-family: $bitter-italic;
+    font-size: 16px;
+  }
+
+  .inner-wrapper {
+    line-height: 1.4;
+
+    .content-wrapper {
+      padding: 0 0 30px 0; 
+
+      .anniversary {
+        position: relative; 
+        padding: 25px 0;
+        text-align: center;
+
+
+        @media (min-width: $bp-small) {
+          text-align: left;
+        }
+
+        .orange-bar {
+          &:before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 100vw;
+            -moz-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            background: $dark-orange;
+            z-index: -1;
+            height: 14px;
+          }
+        }
+
+        &:before {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 50%;
+          width: 100vw;
+          -moz-transform: translateX(-50%);
+          -ms-transform: translateX(-50%);
+          -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+          background: $blue;
+          z-index: -1;
+        }
+
+        h3 {
+          font-family: $peralta-regular;
+          font-size: 25px;
+          color: $orange;
+          text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);;
+          margin: 13px 0 0 0;
+
+          @media (min-width: $bp-small) {
+            font-size: 30px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 40px;
+          }
+
+          @media (min-width: $bp-large) {
+            font-size: 52px;
+          }
+        }
+
+        .text {
+
+          h3 {
+            font-size: 18px;
+            color: $tan; 
+            text-shadow: 0px;
+
+            @media (min-width: $bp-small) {
+              font-size: 22px;
+            }
+
+            @media (min-width: $bp-middle) {
+              font-size: 27px;
+            }
+
+            @media (min-width: $bp-large) {
+              font-size: 30px;
+            }
+          }
+          p {
+            color: $tan;
+          }
+        }
+
+        .image {
+            margin-bottom: 10px;
+
+            @media (min-width: $bp-small) {
+              margin-bottom: 0;
+              float: left;
+              padding: 15px 20px 36px 0;
+            }
+
+            @media (min-width: $bp-middle) {
+              padding: 15px 20px 15px 0;
+            }
+          }
+      }
+
+      h5 {
+        position: relative;
+        font-family: $podkova-bold;
+        color: #cf760f;
+        font-size: 17px;
+        margin: 0 0 25px;
+        padding-bottom: 25px;
+
+        @media (min-width: $bp-small) {
+          margin: 0 0 30px;
+          font-size: 19px;
+        }
+
+        @media (min-width: $bp-middle) {
+          margin: 0 0 45px;
+          font-size: 21px;
+        }
+
+        @media (min-width: $bp-large) {
+          font-size: 23px;
+        }
+
+        &:before {
+          @include pseudo-block($bottom: 0, $left: 0, $right: 0);
+          height: 5px;
+          background: image-url('bg/dott-post.png');
+        }
+      }
+
+      .form {
+        margin: 0;
+        padding: 0;
+
+        &:before, &:after {
+          display: none;
+        }
+
+        .form-item-company-name {
+          font-size: 18px;
+
+          strong {
+            font-size: 19px;
+          }
+        }
+
+        .actions-outer-wrapper {
+          @include clearfix();
+          position: relative;
+          margin: 30px 0 0;
+          padding: 30px 0 0;
+
+          &:before {
+            @include pseudo-block($top: 0, $left: 0, $right: 0);
+            height: 5px;
+            background: image-url('bg/dott-post.png');
+          }
+
+        }
+      }
+
+      .cols {
+
+        ul {
+          margin: 20px 0;
+          padding: 0;
+          list-style: none;
+
+          li {
+            display: inline-block;
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 15px;
+
+            &:before {
+              @include pseudo-block($top: 5px, $left: 0);
+              border-top: 8px solid transparent;
+              border-bottom: 8px solid transparent;
+              border-left: 11px solid #ebb542;
+            }
+          }
+        }
+      }
+    }
+
+    .btn-wrap {
+      float: right;
+    }
+  }
+}

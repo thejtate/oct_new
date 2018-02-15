@@ -1,0 +1,85 @@
+.page {
+  background: #fccf65;
+  font-size: 16px;
+
+  @media (min-width: $bp-small) {
+    font-size: 17px;
+  }
+
+  @media (min-width: $bp-middle) {
+    font-size: 18px;
+  }
+
+  @media (min-width: $bp-large) {
+    font-size: 19px;
+  }
+
+  .title {
+    padding: 35px 0 25px;
+    text-align: center;
+    position: relative;
+
+    @media (min-width: $bp-small) {
+      padding: 35px 0 25px;
+    }
+
+    @media (min-width: $bp-middle) {
+      padding: 45px 0 35px 0;
+    }
+
+    &:before {
+      @include pseudo-block($top: 0, $bottom: 0, $left: 50%);
+      width: 100vw;
+      @include transform(translateX(-50%));
+      background: image-url('bg/blue-polkadot-bg.jpg');
+      z-index: -1;
+    }
+
+    h2 {
+      font-size: 35px;
+      color: #9dc1f2;
+      text-shadow: -4px 3px 0 #182b4d;
+      font-family: $peralta-regular;
+      margin: 0;
+
+      @media (min-width: $bp-small) {
+        font-size: 45px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 52px;
+      }
+    }
+  }
+
+  @import "shows";
+  @import "about";
+  @import "contact";
+  @import "history";
+  @import "location";
+  @import "what-we-do";
+  @import "faq";
+  @import "info";
+  @import "summer";
+  @import "touring";
+  @import "auction";
+  @import "tickets";
+  @import "store";
+  @import "ftb";
+  @import "schedule";
+  @import "donation";
+  @import "cart";
+  @import "membership";
+  @import "sponsorship";
+  @import "ffn";
+  @import "ftb-tickets";
+  @import "checkout";
+  @import "capms-list";
+  @import "enrollment";
+  @import "with-title-img";
+  @import "timeline";
+  @import "homepage";
+  @import "camps";
+  @import "classes";
+  @import "finish-payment";
+}

@@ -1,0 +1,62 @@
+.region-footer-bottom {
+  font-size: 23px;
+  width: 261px;
+  height: 335px;
+  background: image-url('bg/social-bg.png');
+  padding: 26px 30px;
+  position: fixed;
+  right: -160px;
+  top: 50%;
+  @include transform(translateY(-50%));
+  z-index: 11;
+  @include transition(all .4s);
+
+  &:hover {
+    right: 0;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    font-family: $podkova-bold;
+    list-style: none;
+
+    li {
+      margin-bottom: 48px;
+    }
+
+    .soc-1 a:before {
+      @include oneline-sprite-box($icons, soc-1);
+    }
+
+    .soc-2 a:before {
+      @include oneline-sprite-box($icons, soc-2);
+    }
+
+    .soc-3 a:before {
+      @include oneline-sprite-box($icons, soc-3);
+    }
+
+    .soc-4 a:before {
+      @include oneline-sprite-box($icons, soc-4);
+    }
+
+    a {
+      color: #fabb3e;
+      text-decoration: none;
+      text-shadow: -3px 2px 0 #c46008;
+      display: block;
+      position: relative;
+      padding-left: 75px;
+
+      &:before {
+        @include pseudo-block($top: 50%, $left: 0);
+        @include transform(translateY(-50%));
+      }
+
+      &:hover {
+        color: #fcea79;
+      }
+    }
+  }
+}

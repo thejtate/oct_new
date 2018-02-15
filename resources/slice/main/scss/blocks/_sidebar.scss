@@ -1,0 +1,198 @@
+.sidebar {
+  display: none;
+}
+
+.with-sidebar {
+
+  .site-container {
+    float: left;
+    width: 74%;
+
+    .content-inner {
+      margin: 20px 0 0 0;
+    }
+  }
+
+  .sidebar {
+    width: 242px;
+    display: block;
+
+    &.sidebar-left {
+      float: left;
+    }
+    &.sidebar-right {
+      float: right;
+    }
+
+    .b-subscribe {
+      background: image-url('bg/bg-subscribe.png') no-repeat 0 0;
+      width: 230px;
+      height: 84px;
+      margin-top: 15px;
+      padding-left: 16px;
+      position: relative;
+
+      .b-subscribe-text {
+        color: #fcea79;
+        font-family: $Humanaregular;
+        font-size: 13px;
+        padding: 15px 0 8px;
+      }
+
+      .b-subscribe-field {
+
+        .text {
+          background: #fbffb2;
+          border: solid #c47500;
+          border-width: 2px 2px 0 0;
+          width: 158px;
+          padding: 3px;
+          font-size: 14px;
+          vertical-align: middle;
+          margin-right: 6px;
+          letter-spacing: -1px;
+        }
+        .submit {
+          border: none;
+          @include text-hide();
+          @include oneline-sprite-box($icons, but-submit);
+          position: absolute;
+          top: 34px;
+          right: 10px;
+        }
+      }
+    }
+
+
+    .b-sponsors {
+      background: image-url('bg/sponsors.png') no-repeat;
+      width: 213px;
+      padding-left: 7px;
+      height: 146px;
+      margin: 12px 0 10px 5px;
+      text-align: center;
+
+      .name {
+        font-family: $atlas;
+        font-size: 14px;
+        text-align: center;
+        color: #2c3c67;
+        padding-top: 25px;
+      }
+
+      .slider {
+        width: 165px;
+        height: 70px;
+        overflow: hidden;
+        margin-left: 25px;
+
+        .sponsors-list {
+          margin: 0;
+          padding: 0;
+
+          & > li {
+            list-style: none;
+            width: 165px;
+            height: 70px;
+            font-size: 19px;
+            font-family: Georgia, serif;
+            font-weight: bold;
+            color: #e5e8ff;
+            display: inline-block;
+
+            & > a {
+              text-decoration: none;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+
+    .b-sidebar-links {
+      background: image-url('bg/bg-sidebar-list.png') no-repeat;
+      width: 229px;
+      height: 328px;
+      padding-top: 1px;
+
+      .sidebar-links {
+        list-style: none;
+        margin: 18px 0 0 8px;
+        width: 204px;
+        padding: 0;
+
+        & > li {
+          padding-left: 50px;
+          font-size: 13px;
+          font-family: $Humanaregular;
+          color: #fcea79;
+          margin-bottom: 27px;
+          position: relative;
+
+          &.facebook:before {
+            @include pseudo-block($top: 0, $left: 0);
+            @include oneline-sprite-box($icons, icon-facebook)
+          }
+          &.calendar:before {
+            @include pseudo-block($top: 0, $left: 0);
+            @include oneline-sprite-box($icons, icon-calendar)
+          }
+          &.member:before {
+            @include pseudo-block($top: 0, $left: 0);
+            @include oneline-sprite-box($icons, icon-chair)
+          }
+          &.donation:before {
+            @include pseudo-block($top: 0, $left: 0);
+            @include oneline-sprite-box($icons, icon-prize)
+          }
+
+          & > a {
+            font-weight: bold;
+            font-size: 17px;
+            color: #a93b43;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+
+    .oct-cart-block {
+      border: 3px solid #F5AF35;
+      padding: 20px;
+      background-color: #EB9823;
+      margin: 3px 0px 0px 0px;
+      padding: 10px;
+      width: 229px;
+
+      a {
+        color: #A93B43;
+        font-size: 17px;
+        font-weight: bold;
+        font-family: $Humanaregular;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .sponsor-logos {
+      .logos-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        & > li {
+
+          & > a {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

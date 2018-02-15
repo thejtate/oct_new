@@ -1,0 +1,183 @@
+&.page-classes {
+
+  .content-wrapper {
+    text-align: center;
+  }
+
+  .text {
+    margin-bottom: 30px;
+
+    h3 {
+      font-family: $peralta-regular;
+      color: #395e96;
+      font-size: 25px;
+      margin: 0 0 15px;
+
+      @media (min-width: $bp-small) {
+        font-size: 30px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 35px;
+      }
+
+      @media (min-width: $bp-large) {
+        font-size: 44px;
+        margin: 0;
+      }
+    }
+
+    .subtitle {
+      font-family: $podkova-bold;
+      color: #d0761a;
+      font-size: 18px;
+      margin-bottom: 20px;
+
+      @media (min-width: $bp-small) {
+        font-size: 20px;
+        margin-bottom: 30px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 21px;
+      }
+
+      @media (min-width: $bp-large) {
+        font-size: 23px;
+      }
+    }
+  }
+
+  .top-img {
+    margin-bottom: 25px;
+
+    img {
+      position: relative;
+      left: 50%;
+      @include translateX(-50%);
+    }
+  }
+
+  ul {
+    text-align: left;
+
+    li {
+      padding-left: 40px;
+    }
+  }
+
+  .btn-wrap.style-d {
+   margin-bottom: 35px;
+  }
+
+  table {
+    width: 100%;
+    text-align: left;
+
+    thead {
+      background: #3e6093;
+      color: #fbce6c;
+      text-transform: uppercase;
+
+      th {
+        padding: 5px;
+
+        @media (min-width: $bp-small) {
+          padding: 15px;
+        }
+
+        &:first-child {
+          width: 235px;
+        }
+
+        &:nth-child(2) {
+          width: 130px;
+        }
+      }
+    }
+
+    tr {
+      border-bottom: 4px solid #fbce6c;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: #e9b44b;
+    }
+
+    td {
+      vertical-align: top;
+      padding: 5px;
+
+      @media (min-width: $bp-small) {
+        padding: 15px;
+      }
+
+      span {
+        font-family: $podkova-bold;
+      }
+
+      &:first-child, &:nth-child(2), &:last-child, span {
+        font-family: $podkova-bold;
+
+      }
+
+      &:first-child {
+        font-size: 12px;
+
+        @media (min-width: $bp-small) {
+          font-size: 18px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 24px;
+        }
+      }
+
+      &:nth-child(2), &:last-child {
+        font-size: 12px;
+
+        @media (min-width: $bp-small) {
+          font-size: 16px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 20px;
+        }
+      }
+
+      &:nth-child(3) {
+        font-family: $podkova-regular;
+        font-size: 12px;
+
+        @media (min-width: $bp-small) {
+          font-size: 15px;
+        }
+
+        @media (min-width: $bp-middle) {
+          font-size: 16px;
+        }
+
+        span {
+          display: block;
+          font-size: 12px;
+
+          @media (min-width: $bp-small) {
+            font-size: 15px;
+          }
+
+          @media (min-width: $bp-middle) {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  .desc {
+    padding: 15px 30px;
+
+    @media (min-width: $bp-small) {
+      padding: 15px 50px;
+    }
+  }
+}

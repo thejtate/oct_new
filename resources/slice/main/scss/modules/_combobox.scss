@@ -1,0 +1,78 @@
+.combo-wrapper, .combo-list {
+  color: #D47E14;
+}
+
+.combo-wrapper {
+  margin-right: 6px;
+  vertical-align: middle;
+  line-height: 28px;
+  outline: none;
+  cursor: pointer;
+  @include clear-box;
+  border-bottom: 2px solid #C47500;
+  border-left: 2px solid #C47500;
+  position: relative;
+  font-size: 16px;
+  background: #F2B031;
+
+  &.combo-wrapper-active {
+
+    .combo-button:before {
+      border-top: none;
+      border-bottom: 7px solid #C47500;
+    }
+  }
+
+  .combo-button {
+    float: right;
+    @include text-hide;
+    position: relative;
+    background: #EB9823;
+    border-left: 2px solid #C47500;
+
+    &:after {
+      @include pseudo-block($bottom: 0, $top: 0, $left: 0);
+      border-left: 1px solid #F2B031;
+    }
+
+    &:before {
+      @include pseudo-block($right: 50%, $top: 50%);
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 7px solid #C47500;
+      margin-top: -3px;
+      margin-right: -6px;
+    }
+  }
+
+  .combo-selected {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    @include box-sizing(border-box);
+    padding: 0 0 0 17px;
+    word-wrap: normal;
+    overflow: hidden;
+    margin-left: -2px;
+  }
+}
+
+.combo-list {
+  margin: 0;
+  padding: 0;
+  z-index: 8011;
+  overflow: hidden;
+  background: #FBFFB2;
+  border: 2px solid #C47500;
+  border-top: none;
+
+  li {
+    padding: 5px 20px;
+    list-style: none;
+    cursor: pointer;
+    border-bottom: 1px solid #C47500;
+
+    &:hover, &.combo-item-active {
+      background: #EB9823;
+    }
+  }
+}

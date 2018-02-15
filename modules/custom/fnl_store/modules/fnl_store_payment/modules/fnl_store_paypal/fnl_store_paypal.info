@@ -1,0 +1,8 @@
+name = Funnel store PayPal payment privider
+description = Funnel store PayPal payment privider. Implements PayPal WPS payment (Website Payments Standard).
+package = Funnel
+core = 7.x
+version = 7.x-1.x
+
+;files[] =
+dependencies[] = fnl_store_payment

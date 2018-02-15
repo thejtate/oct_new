@@ -1,0 +1,142 @@
+<?php
+
+/**
+ * @file
+ * oct_store Fairy Tale ball product
+ */
+
+/**
+ * Implements hook_fnl_store_products().
+ */
+function oct_store_ftb_fnl_store_products() {
+
+  return array(
+    'product_ftb' => array(
+      'title' => t('Fairy Tale Ball tickets'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function oct_store_ftb_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'oct_store_ftb') . '/views',
+  );
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function oct_store_ftb_preprocess_node(&$vars) {
+
+  switch ($vars['type']) {
+    case "product_ftb":
+      module_load_include("inc", "oct_store_ftb", "includes/oct_store_ftb.form");
+      $vars['content']['form'] = drupal_get_form('oct_store_ftb_form', $vars['node']);
+      $vars['content']['messages'] = array('#markup' => theme('status_messages'), '#weight' => '-10');
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_ftb_theme() {
+  $return = array();
+
+  $return['oct_store_ftb_form_table'] = array(
+    'render element' => 'element',
+    'path' => drupal_get_path('module', 'oct_store_ftb') . "/templates",
+    'template' => 'oct-store-ftb-table-form'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_fnl_store_cart_product_prepare_view().
+ *
+ * Prepare product formatted array of properties. For using in different render templates.
+ */
+function oct_store_ftb_fnl_store_cart_product_prepare_view($product) {
+
+  if($product->type === 'product_ftb') {
+
+    $product->properties_list[] = array(
+      'title' =>  t('Your Name / Company Name'),
+      'value' => check_plain($product->data['full_info']['company_name']),
+    );
+
+    $product->properties_list[] = array(
+      'title' =>  t('Tickets'),
+      'value' => '',
+    );
+
+    foreach ($product->data['selected_tickets'] as $item) {
+      $product->properties_list[] = array(
+        'title' => '',
+        'value' => $item['count'] . ' x ' . $item['label'] . ' ($ ' . $item['price'] . ' each)',
+      );
+      if(!empty($item['names'])) {
+        $product->properties_list[] = array(
+          'title' => 'Names',
+          'value' => implode(', ', $item['names']),
+        );
+      }
+    }
+    if(!empty($product->data['full_info']['guests_seated'])) {
+      $product->properties_list[] = array(
+        'title' =>  t('List the names of other guests with whom you would like to be seated'),
+        'value' => '',
+      );
+      $product->properties_list[] = array(
+        'title' =>  '',
+        'value' => check_plain($product->data['full_info']['guests_seated']),
+      );
+    }
+  }
+
+}
+
+/**
+ * Implements hook_fnl_store_cart_after_add_product().
+ */
+function oct_store_ftb_fnl_store_cart_after_add_product($product) {
+  //TODO: add to product tables
+  //save production related information to own db table
+  if($product->type === 'product_ftb') {
+
+    $record = array();
+    $record['cid'] = $product->cid;
+    $record['name'] = $product->data['full_info']['company_name'];
+
+    drupal_write_record('oct_store_ftb_purchase', $record);
+  }
+}
+
+
+/**
+ * Implements hook_fnl_store_cart_after_remove_product().
+ */
+function oct_store_ftb_fnl_store_cart_after_remove_product($product) {
+  //remove production related info
+  db_delete('oct_store_ftb_purchase')
+    ->condition('cid', $product->cid)
+    ->execute();
+}
+
+/**
+ * Implements hook_fnl_store_delete_cart().
+ *
+ * @param $oid
+ * @param $cids
+ */
+function oct_store_ftb_fnl_store_delete_cart($oid, $cids) {
+  //remove production related info
+  db_delete('oct_store_ftb_purchase')
+    ->condition('cid', $cids, 'IN')
+    ->execute();
+}

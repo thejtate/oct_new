@@ -1,0 +1,11 @@
+name = Funnel store payment
+description = Funnel store payment
+package = Funnel
+core = 7.x
+version = 7.x-1.x
+
+configure = admin/config/funnel-store/payments
+
+files[] = views/fnl_store_payment.views.inc
+
+dependencies[] = fnl_store

@@ -1,0 +1,113 @@
+&.page-store-camps {
+
+  .content-inner {
+    color: #3b5f94;
+    font-family: $Humanaregular;
+    font-size: 16px;
+
+    .content {
+
+      .form-type-textfield, .form-type-textarea {
+
+        label {
+          display: inline-block;
+          width: 110px;
+          vertical-align: top;
+          padding-right: 5px;
+        }
+
+        .form-text {
+          width: 155px;
+          background: #fbffb2;
+          border: solid #c47500;
+          border-width: 2px 2px 0 0;
+          padding: 3px;
+          font-size: 14px;
+          margin-right: 6px;
+          letter-spacing: -1px
+        }
+
+        .form-textarea-wrapper {
+          vertical-align: top;
+          width: 380px;
+          display: inline-block;
+
+          .form-textarea {
+            background: #fbffb2;
+            border: solid #c47500;
+            border-width: 2px 2px 0 0;
+            padding: 3px;
+            font-size: 14px;
+            margin-right: 6px;
+            letter-spacing: -1px
+          }
+        }
+      }
+
+      .container-inline-date {
+
+        .form-item-birth-date {
+
+          & > label {
+            width: 110px;
+            display: inline-block;
+          }
+
+          .date-padding {
+            display: inline-block;
+
+            .form-item {
+              display: inline-block;
+            }
+          }
+        }
+      }
+
+      .form-item-week {
+
+        label {
+          display: inline-block;
+          width: 110px;
+        }
+
+        .jq-selectbox {
+          width: 78%;
+        }
+      }
+
+      #oct-store-camps-products-table {
+
+        table {
+          width: 100%;
+          margin-bottom: 15px;
+
+          thead {
+            background-color: #e6bc3a;
+            color: #CF760F;
+            font-family: Verdana, Arial, sans-serif;
+
+            th {
+              border: none;
+              font-weight: normal;
+              padding: 3px 10px;
+              font-size: 14px;
+            }
+          }
+
+          td {
+            border-bottom: 1px solid #e6bc3a;
+
+            .form-item {
+              margin: 10px 0;
+            }
+          }
+
+          tbody {
+            border: none;
+          }
+        }
+      }
+
+    }
+  }
+}

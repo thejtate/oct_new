@@ -1,0 +1,73 @@
+&.page-fun-extras {
+
+  .site-container {
+    text-align: center;
+
+    .b-purchase-ticket {
+      padding: 1px 29px 0 27px;
+      margin: -10px 0 10px -14px;
+
+      p {
+        font-size: 13px;
+        line-height: 28px;
+
+        &:first-letter {
+          font-family: $atlas;
+          color: #608FCC;
+          font-size: 18px;
+        }
+      }
+    }
+
+    h2 {
+      font-size: 22px;
+      font-family: $atlas;
+      font-weight: normal;
+      text-shadow: -2px 2px 0 #a65e0c;
+      display: inline-block;
+      color: #fbffb2;
+      background: image-url('bg/bg-comingup.png') no-repeat;
+      padding: 11px 29px;
+      margin: 0;
+      min-height: 59px;
+      min-width: 237px;
+    }
+
+    .views-row {
+      @include clearfix();
+      text-align: left;
+      margin: 15px 0;
+
+      .pull-left {
+        width: 35%;
+
+        img {
+          border: 8px solid #d7a625;
+        }
+      }
+
+      .pull-right {
+        width: 65%;
+
+        a {
+          color: #cf6e00;
+          font-size: 24px;
+          font-family: Georgia, serif;
+          font-weight: bold;
+          text-decoration: none;
+          display: block;
+          margin-bottom: 15px;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        span {
+          display: block;
+          color: #3B5F94;
+        }
+      }
+    }
+  }
+}

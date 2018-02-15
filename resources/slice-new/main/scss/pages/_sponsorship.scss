@@ -1,0 +1,118 @@
+&.page-sponsorship {
+
+  h2 {
+    color: #375c98;
+    font-size: 38px;
+    font-family: peralta-regular;
+    margin: 0;
+    position: relative;
+  }
+
+  .form {
+    margin: 10px 0 30px;
+    padding-bottom: 20px;
+
+    .form-text-amount .form-item {
+      margin-bottom: 0;
+    }
+
+    .form-item-contribute{
+      margin-bottom: 0;
+      border-top: 2px solid #f2bd4b;
+      padding: 30px 0;
+      position: relative;
+
+      &:before {
+        @include pseudo-block($right: 0, $left: 0, $bottom:0);
+        height: 5px;
+        background: url('../images/bg/dott-post.png')
+      }
+    }
+
+    &:before {
+      display: none;
+    }
+  }
+
+  fieldset {
+    margin: 0 0 25px;
+    padding: 0;
+    border: none;
+    border-bottom: 2px solid #f2bd4b;
+
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+  }
+
+  .btn-wrap {
+    float: right;
+  }
+
+  .title {
+    padding: 0;
+
+    img {
+      position: relative;
+      left: 50%;
+      @include transform(translateX(-50%));
+      display: block;
+    }
+  }
+
+  .col {
+
+    &:first-child {
+
+      .form-item {
+        @include clearfix();
+        text-align: right;
+
+        label {
+          text-align: left;
+        }
+      }
+
+      label {
+        width: 60%;
+      }
+
+      p {
+        font-family: $bitter-italic;
+        color: #d37700;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+    }
+
+    &:last-child {
+      padding-left: 20px;
+
+      label {
+        font-size: 28px;
+        color: #cf760f;
+        font-family: $peralta-regular;
+      }
+
+      ul {
+        list-style: none;
+        margin: 10px 0;
+        padding: 0;
+
+        li {
+          margin-bottom: 10px;
+          position: relative;
+          padding-left: 20px;
+
+          &:before {
+            @include pseudo-block($top: 4px, $left: 0);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 11px solid #ebb542;
+          }
+        }
+      }
+    }
+  }
+}

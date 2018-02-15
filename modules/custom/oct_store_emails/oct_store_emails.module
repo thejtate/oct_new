@@ -1,0 +1,448 @@
+<?php
+
+/**
+ * @file
+ * OCT store emails
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function oct_store_emails_menu() {
+  $items = array();
+
+  $items['store/manage/emails'] = array(
+    'title' => 'Emails',
+    'access callback' => 'user_access',
+    'access arguments' => array('oct store emails administer'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('oct_store_emails_admin_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 12,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function oct_store_emails_permission() {
+  $return = array();
+
+  $return['oct store emails administer'] = array(
+    'title' => t('Administer store emails settings'),
+    'description' => t('Allow to edit OCT store emails settings.'),
+  );
+
+  return $return;
+}
+
+function oct_store_emails_admin_form($form) {
+
+  $form['oct_store_emails_admin'] = array(
+    '#type' => 'textfield',
+    '#required' => FALSE,
+    '#title' => t('Store admin emails.'),
+    '#description' => t('Emails separated by comma. Will receive all store email notifications'),
+    '#element_validate' => array('oct_store_emails_validate_multiple_email_element'),
+    '#default_value' => variable_get('oct_store_emails_admin', ''),
+  );
+
+  $form['product_admins'] = array(
+    '#type' => 'fieldset',
+    '#tree' => FALSE,
+    '#title' => t('Product admins'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+  $products = fnl_store_products();
+
+  foreach ($products as $name => $info) {
+
+    $form['product_admins']['oct_store_emails_' . $name] = array(
+      '#type' => 'textfield',
+      '#required' => FALSE,
+      '#title' => t('Purchase emails receivers for "!product"', array('!product' => $info['title'])),
+      '#description' => t('Emails separated by comma.'),
+      '#element_validate' => array('oct_store_emails_validate_multiple_email_element'),
+      '#default_value' => variable_get('oct_store_emails_' . $name, ''),
+    );
+
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Form element validation handler for email elements with emails separated by comma.
+ */
+function oct_store_emails_validate_multiple_email_element($element, &$form_state) {
+  $value = $element['#value'];
+  if (!empty($value)) {
+
+    $emails = explode(',', $value);
+    foreach ($emails as $email) {
+      if (!valid_email_address(trim($email))) {
+        form_error($element, t('The entered email address %address is not a valid address.', array('%address' => $email)));
+        break;
+      }
+    }
+  }
+}
+
+
+function oct_store_emails_site_logo_html() {
+
+  $img_url = url(drupal_get_path('module', 'oct_store_emails') . '/images/logo.png', array('absolute' => TRUE));
+  $html = '<a href=' . url('<front>', array('absolute' => TRUE)) . '><img src="' . '' . $img_url . '"></a>';
+
+  return $html;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oct_store_emails_theme() {
+  $return = array();
+
+  $return['oct_store_emails_order_invoice'] = array(
+    'template' => 'templates/oct-store-emails-order-invoice',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'is_email' => TRUE,
+      'store_link' => '',
+      'site_logo' => ''
+    ),
+  );
+
+  $return['oct_store_emails_order_partial_paid'] = array(
+    'template' => 'templates/oct-store-emails-order-partial-paid',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'is_email' => FALSE,
+      'store_link' => '',
+      'site_logo' => ''
+    ),
+  );
+
+  $return['oct_store_emails_order_partial_paid_canceled'] = array(
+    'template' => 'templates/oct-store-emails-order-partial-paid-canceled',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'is_email' => FALSE,
+      'store_link' => '',
+      'site_logo' => ''
+    ),
+  );
+
+  $return['oct_store_emails_order_partial_paid_finish_payment_reminder'] = array(
+    'template' => 'templates/oct-store-emails-order-partial-paid-finish-payment-reminder',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'is_email' => FALSE,
+      'store_link' => '',
+      'site_logo' => ''
+    ),
+  );
+
+  $return['oct_store_emails_order_partial_paid_admin'] = array(
+    'template' => 'templates/oct-store-emails-order-partial-paid-admin',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'message' => '',
+    ),
+  );
+
+  $return['oct_store_emails_order_admin'] = array(
+    'template' => 'templates/oct-store-emails-order-admin',
+    'variables' => array(
+      'order' => NULL,
+      'cart' => NULL,
+      'message' => '',
+    ),
+  );
+
+  return $return;
+}
+
+/**
+ * preprocess_oct_store_emails_order_invoice
+ * @param $vars
+ */
+function oct_store_emails_preprocess_oct_store_emails_order_invoice(&$vars) {
+
+  if(!empty($vars['cart']['products'])) {
+    foreach ($vars['cart']['products'] as &$product) {
+      fnl_store_cart_product_prepare_view($product);
+    }
+  }
+}
+
+/**
+ * Preprocess_oct_store_emails_order_invoice
+ *
+ * @param $vars
+ */
+function oct_store_emails_preprocess_oct_store_emails_order_admin(&$vars) {
+
+  if(!empty($vars['cart']['products'])) {
+    foreach ($vars['cart']['products'] as &$product) {
+      fnl_store_cart_product_prepare_view($product);
+    }
+  }
+}
+
+/**
+ * Implements hook_fnl_store_order_after_save_alter().
+ */
+function oct_store_emails_fnl_store_order_after_save_alter($order) {
+
+  if(!empty($order->original->status) && $order->original->status !== $order->status) {
+    //on status changing
+    if($order->status === FNL_ORDER_STATUS_PAYMENT_RECEIVED) {
+      //send email notifications
+      $cart = fnl_store_cart_load($order->oid);
+      if(!empty($order->data['checkout_values']['user']['email'])) {
+        //send email to customer
+        $body = theme(
+          'oct_store_emails_order_invoice',
+          array(
+            'order' => $order,
+            'cart' => $cart,
+            'store_link' => l(variable_get('site_name', "Oklahoma Children's Theatre") . ' store', '<front>'),
+            'site_logo' => oct_store_emails_site_logo_html(),
+          )
+        );
+        oct_store_emails_send($order->data['checkout_values']['user']['email'], t('Your Order at OCT Store'), $body);
+      }
+
+      //send emails to store admins
+      $admin_emails = oct_store_emails_get_cart_admin_emails($cart);
+
+      $body = theme(
+        'oct_store_emails_order_admin',
+        array(
+          'order' => $order,
+          'cart' => $cart,
+          'message' => '',
+        )
+      );
+
+      oct_store_emails_send(implode(', ',$admin_emails), t('Payment complete at OCT Store'), $body);
+    }
+  }
+}
+
+function oct_store_emails_send_order_partial_paid_finish_payment_reminder($order) {
+
+  //send email notifications
+  $cart = fnl_store_cart_load($order->oid);
+  if(!empty($order->data['checkout_values']['user']['email'])) {
+    //send email to customer
+    $body = theme(
+      'oct_store_emails_order_partial_paid_finish_payment_reminder',
+      array(
+        'order' => $order,
+        'cart' => $cart,
+        'store_link' => l(variable_get('site_name', "Oklahoma Children's Theatre") . ' store', '<front>'),
+        'site_logo' => oct_store_emails_site_logo_html(),
+        'user_email' => oct_store_emails_get_user_email_from_order($order),
+      )
+    );
+    oct_store_emails_send($order->data['checkout_values']['user']['email'], t('Payment deadline is coming at OCT Store. Please finish your payment.'), $body);
+  }
+}
+
+function oct_store_emails_send_partial_payment_notification_to_admin($order) {
+
+  $cart = fnl_store_cart_load($order->oid);
+  //send emails to store admins
+  $admin_emails = oct_store_emails_get_cart_admin_emails($cart);
+
+  $body = theme(
+    'oct_store_emails_order_partial_paid_admin',
+    array(
+      'order' => $order,
+      'cart' => $cart,
+      'message' => '',
+    )
+  );
+
+  oct_store_emails_send(implode(', ',$admin_emails), t('Partial payment at OCT Store'), $body);
+}
+
+function oct_store_emails_send_partial_payment_notification_to_customer($order) {
+
+  //send email notifications
+  $cart = fnl_store_cart_load($order->oid);
+  if(!empty($order->data['checkout_values']['user']['email'])) {
+    //send email to customer
+    $body = theme(
+      'oct_store_emails_order_partial_paid',
+      array(
+        'order' => $order,
+        'cart' => $cart,
+        'store_link' => l(variable_get('site_name', "Oklahoma Children's Theatre") . ' store', '<front>'),
+        'site_logo' => oct_store_emails_site_logo_html(),
+        'user_email' => oct_store_emails_get_user_email_from_order($order),
+      )
+    );
+    $emails = oct_store_emails_get_all_user_emails_from_order($order);
+
+    foreach ($emails as $email) {
+      oct_store_emails_send($email, t('Your Payment at OCT Store'), $body);
+    }
+  }
+}
+
+function oct_store_emails_send_cancel_order_notification_to_customer($order) {
+
+  //send email notifications
+  $cart = fnl_store_cart_load($order->oid);
+  if(!empty($order->data['checkout_values']['user']['email'])) {
+    //send email to customer
+    $body = theme(
+      'oct_store_emails_order_partial_paid_canceled',
+      array(
+        'order' => $order,
+        'cart' => $cart,
+        'store_link' => l(variable_get('site_name', "Oklahoma Children's Theatre") . ' store', '<front>'),
+        'site_logo' => oct_store_emails_site_logo_html(),
+        'user_email' => oct_store_emails_get_user_email_from_order($order),
+      )
+    );
+
+    $emails = oct_store_emails_get_all_user_emails_from_order($order);
+
+    foreach ($emails as $email) {
+      oct_store_emails_send($email, t('Your order was canceled because no full payment has been made.'), $body);
+    }
+  }
+}
+
+function oct_store_emails_get_all_user_emails_from_order($order) {
+  $emails = array();
+  //checkout billing email
+  if(!empty($order->data['checkout_values']['user']['email'])) {
+    $emails[] = $order->data['checkout_values']['user']['email'];
+  }
+
+  $account_email = oct_store_emails_get_user_email_from_order($order) ;
+  if(!empty($account_email) && !in_array($account_email, $emails)) {
+    $emails[] = $account_email;
+  }
+  return $emails;
+}
+
+/**
+ * Get email from user account in order.
+ */
+function oct_store_emails_get_user_email_from_order($order) {
+  $user = user_load($order->user_id);
+  return !empty($user->mail) ? $user->mail : '';
+}
+
+
+/**
+ * Check order cart products and return array of emails for this order.
+ */
+function oct_store_emails_get_cart_admin_emails($cart) {
+
+  $admin_emails = array();
+
+  $main_emails = variable_get('oct_store_emails_admin', '');
+  if(!empty($main_emails)) {
+    $admin_emails = explode(',', $main_emails);
+    array_walk($admin_emails, function(&$mail) {$mail = trim($mail);});
+  }
+
+  
+  $cart_product_types = array();
+  if(!empty($cart['products'])) {
+    foreach ($cart['products'] as $product) {
+      if(!in_array($product->type, $cart_product_types)) {
+        $cart_product_types[] = $product->type;
+      }
+    }
+  }
+
+  foreach ($cart_product_types as $type) {
+      $product_admin_emails = variable_get('oct_store_emails_' .  $type, '');
+    if(!empty($product_admin_emails)) {
+      $product_admin_emails_array = explode(',', $product_admin_emails);
+      array_walk($product_admin_emails_array, function(&$mail) {$mail = trim($mail);});
+      $admin_emails = array_unique(array_merge($admin_emails, $product_admin_emails_array));
+    }
+  }
+
+  return $admin_emails;
+}
+
+/**
+ * Implements hook_mail().
+ */
+function oct_store_emails_mail($key, &$message, $params) {
+  if ($key == 'oct_store_emails') {
+    $message['headers'] = array_merge($message['headers'], $params['headers']);
+    $message['subject'] = $params['subject'];
+    $message['body'][] = $params['body'];
+  }
+}
+
+/**
+ * Send shop emails
+ *
+ * @param $to
+ * @param $subject
+ * @param $html_body
+ * @return bool
+ */
+function oct_store_emails_send($to, $subject, $html_body) {
+  $module = 'oct_store_emails';
+  $key = "oct_store_emails";
+  $from = variable_get('site_mail', ini_get('sendmail_from'));
+  $language = language_default();
+  $params = array(
+    'subject' => $subject,
+    'body' => $html_body,
+  );
+  $params['headers']['Content-Type'] = "text/html; charset=UTF-8; format=flowed; delsp=yes";
+  $params['plain'] = FALSE;
+  $params['plaintext'] = NULL ;
+
+  $to = str_replace(",,",",", $to);
+  $to = str_replace(", ,",",", $to);
+
+  $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
+  if($mail['result']) {
+    $msg = 'Email sent to:' . $to . ' subject ' . $subject;
+    watchdog('oct_store_emails_send', $msg, array());
+    return TRUE;
+  } else {
+    $error_msg = 'Failed to send the email in oct_store_emails Module';
+    watchdog('oct_store_emails_send', $error_msg, array(), WATCHDOG_ALERT);
+    return FALSE;
+  }
+}
+
+
+function oct_store_emails_preprocess_fnl_store_checkout_complete_page(&$vars) {
+
+  $cart = fnl_store_cart_load($vars['order']->oid);
+  $vars['invoice'] = theme(
+    'oct_store_emails_order_invoice',
+    array(
+      'order' => $vars['order'],
+      'cart' => $cart,
+      'store_link' => l(variable_get('site_name', "Oklahoma Children's Theatre") . ' store', '<front>'),
+      'site_logo' => oct_store_emails_site_logo_html(),
+      'is_email' => FALSE,
+    )
+  );
+}

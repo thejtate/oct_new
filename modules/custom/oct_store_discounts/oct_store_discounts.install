@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Oct store discounts module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function oct_store_discounts_install() {
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('name', 'oct_store_discounts')
+    ->execute();
+}

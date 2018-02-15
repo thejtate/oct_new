@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Oct store production module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function oct_store_production_schema() {
+  $schema = array();
+
+  $schema['oct_store_production_purchase'] = array(
+    'description' => 'Production purchases info.',
+
+    'fields' => array(
+      'cid' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Primary Key: Unique identifier for product cart item.',
+      ),
+      'datetime' => array(
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'description' => 'Show date time',
+        'not null' => TRUE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'quantity_adults' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Adults quantity',
+      ),
+      'quantity_students' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Students quantity',
+      ),
+      'quantity_children' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Children quantity',
+      ),
+      'quantity_children_small_group' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Children small group quantity',
+      ),
+      'quantity_children_big_group' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Children big group quantity',
+      ),
+      'quantity_complimentary_adult' => array(
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Complimentary adult quantity',
+      ),
+//      hook_schema_item_fields_
+    ),
+    'primary key' => array('cid'),
+  );
+
+  return $schema;
+}

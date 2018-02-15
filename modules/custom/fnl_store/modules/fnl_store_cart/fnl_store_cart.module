@@ -1,0 +1,248 @@
+<?php
+
+/**
+ * @file
+ * Store cart.
+ */
+define('FNL_STORE_CART_PAGE', 'cart');
+
+module_load_include('inc', 'fnl_store_cart', 'includes/fnl_store_cart.db');
+
+
+/**
+ * Implements hook_menu().
+ */
+function fnl_store_cart_menu() {
+  $items = array();
+
+  $items['store/remove-product/%fnl_store_cart_product'] = array(
+    'title' => 'Remove product',
+    'description' => 'Remove product from cart',
+    'access callback' => 'fnl_store_cart_item_access',
+    'access arguments' => array(2),
+    'page callback' => 'fnl_store_cart_remove_product_callback',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/fnl_store_cart.pages.inc'
+  );
+
+  return $items;
+}
+
+/**
+ * Page access callback.
+ *
+ * @param $cart_product
+ * @return bool
+ */
+function fnl_store_cart_item_access($cart_product) {
+  $current_user_id = fnl_store_cart_user_id();
+  $order = fnl_store_order_load($cart_product->oid);
+  $is_user_product = ($current_user_id == $cart_product->user_id);
+  if(!$is_user_product) {
+    drupal_set_message('Access denied', 'error');
+  } else if($order->status !== FNL_ORDER_STATUS_CART) {
+    //if order already completed, disable access to its products
+    drupal_set_message('Access denied, this cart is outdated, refresh page.', 'error');
+  }
+
+  return $is_user_product;
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function fnl_store_cart_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'fnl_store_cart') . '/views',
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fnl_store_cart_theme() {
+  $return = array();
+
+  $return['fnl_store_cart_block'] = array(
+    'variables' => array('order' => NULL),
+    'template' => 'templates/fnl-store-cart-block'
+  );
+
+  $return['fnl_store_cart_product'] = array(
+    'variables' => array('product' => NULL),
+    'path' => drupal_get_path('module', 'fnl_store_cart') . "/templates",
+    'template' => 'fnl-store-cart-product'
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function fnl_store_cart_block_info() {
+  $blocks = array();
+
+  $blocks['fnl_store_cart'] = array(
+    'info' => t('Funnel store cart'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function fnl_store_cart_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'fnl_store_cart':
+      $block['subject'] = t('');
+      $block['content'] = array(
+        '#markup' => theme('fnl_store_cart_block', array('order' => fnl_store_cart_order_load())),
+      );
+    break;
+  }
+
+  return $block;
+}
+
+/**
+ * Return uid for registered users, and unique session string for anonymous.
+ *
+ * @return string
+ */
+function fnl_store_cart_user_id() {
+  global $user;
+
+  if (!empty($user->uid)) {
+    return $user->uid;
+  } else {
+    if(empty($_SESSION['fnl_store_cart_id'])) {
+      $_SESSION['fnl_store_cart_id'] = uniqid(session_id(), TRUE);
+    }
+    return $_SESSION['fnl_store_cart_id'];
+  }
+}
+
+/**
+ * Template preprocess fnl_store_cart_product
+ * @param $vars
+ */
+function fnl_store_cart_preprocess_fnl_store_cart_product(&$vars) {
+
+  fnl_store_cart_product_prepare_view($vars['product']);
+}
+
+/**
+ * Prepare product properties list with plain line items, to render in templates.
+ *
+ * @param $product
+ */
+function fnl_store_cart_product_prepare_view(&$product) {
+
+  $product->properties_list = array();
+
+  module_invoke_all('fnl_store_cart_product_prepare_view', $product);
+
+}
+
+/**
+ * Create new order.
+ */
+function fnl_store_cart_order_new($user_id = NULL) {
+  $order = new stdClass();
+  $order->user_id = empty($user_id) ? fnl_store_cart_user_id() : $user_id;
+  $order->status = FNL_ORDER_STATUS_CART;
+
+  return fnl_store_order_save($order);
+}
+
+/**
+ * Load user current cart order.
+ */
+function fnl_store_cart_order_load($user_id = NULL) {
+  $oid = fnl_store_cart_order_id_load($user_id);
+  $order = fnl_store_order_load($oid);
+
+  if(empty($order)) {
+    $order = fnl_store_empty_order($user_id);
+  }
+
+  return $order;
+}
+
+/**
+ * Implements hook_fnl_store_order_after_save_alter().
+ */
+function fnl_store_cart_fnl_store_order_after_save_alter($order) {
+
+  if(!empty($order->original->user_id) && $order->original->user_id !== $order->user_id) {
+    //update cart user id
+    fnl_store_cart_update_user_id($order->oid, $order->user_id);
+  }
+
+}
+
+/**
+ * Implements hook_fnl_store_order_delete().
+ *
+ * @param $oid
+ */
+function fnl_store_cart_fnl_store_order_delete($oid) {
+
+  $cids = db_select('fnl_store_cart', 'c')
+    ->condition('c.oid', $oid)
+    ->fields('c', array('cid'))
+    ->execute()
+    ->fetchCol();
+
+  if(!empty($cids)) {
+    module_invoke_all('fnl_store_delete_cart', $oid, $cids);
+    db_delete('fnl_store_cart')
+      ->condition('oid', $oid)
+      ->execute();
+  }
+
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function fnl_store_cart_form_fnl_store_admin_form_alter(
+  &$form,
+  &$form_state,
+  $form_id
+) {
+
+  $form['fnl_store_cart_delete_anonymous_carts_interval'] = array(
+    '#type' => 'textfield',
+    '#required' => FALSE,
+    '#title' => t('Interval in days for deleting old user Carts.'),
+    '#description' => t('Leave it empty to disable.'),
+    '#default_value' => variable_get('fnl_store_cart_delete_anonymous_carts_interval', 30),
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+}
+
+/**
+ * Implements hook_cronapi().
+ */
+function fnl_store_cart_cronapi($op, $job = NULL) {
+  $items = array();
+
+  $items['fnl_store_cart_delete_old_carts'] = array(
+    'description' => 'Remove old not ordered carts',
+    'rule' => '*/30 * * * *', // Every 30 minutes
+    'callback' => 'fnl_store_cart_delete_old_carts',
+    'file' => 'includes/fnl_store_cart.cron.inc',
+  );
+
+  return $items;
+}

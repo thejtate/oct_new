@@ -1,0 +1,60 @@
+.block-nodeblock {
+  margin: 10px 0;
+
+  @media (min-width: $bp-small) {
+    margin: 0;
+  }
+
+  p {
+    margin: 7px 0;
+
+
+    @media (min-width: $bp-small) {
+      margin: 15px 0;
+    }
+  }
+
+  .field-type-text-long {
+    max-width:  $width-xsmall;
+    margin: 0 auto 20px;
+    font-size: 16px;
+    text-align: center;
+
+    @media (min-width: $bp-small) {
+      font-size: 21px;
+      margin: 0 auto 40px;
+      text-align: left;
+      max-width: $width-small;
+    }
+
+    @media (min-width: $bp-middle) {
+      max-width: $width-middle;
+    }
+
+    @media (min-width: $bp-large) {
+      max-width: $width-large;
+    }
+
+
+    .page-cart & {
+      max-width: none;
+    }
+
+    h3 {
+      font-size: 22px;
+      padding: 0;
+      margin-bottom: 0;
+      margin-top: -5px;
+      color: #d17600;
+      font-family: peralta-regular;
+
+      @media (min-width: $bp-small) {
+        font-size: 25px;
+      }
+
+      @media (min-width: $bp-middle) {
+        font-size: 32px;
+      }
+    }
+  }
+}
